@@ -1,1 +1,13 @@
 /* CSS declarations go here */
+.chatinput{
+    position: absolute;
+    width: calc(100% - 20px);
+    bottom: 10px;
+}
+
+.chatarea {
+    position: absolute;
+    height: 90%;
+    width: calc(100% - 20px);
+    overflow-x: scroll;
+}

@@ -3,12 +3,28 @@
 </head>
 
 <body>
-  <h1>Welcome to Meteor!</h1>
-
-  {{> hello}}
+  <h1>mathchat 0.1</h1>
+  {{> chatarea}}
 </body>
 
-<template name="hello">
-  <button>Click Me</button>
-  <p>You've pressed the button {{counter}} times.</p>
+<template name="chat">
+  <p>{{user}} <span style="color:grey">{{time}}</span>: {{text}}</p>
 </template>
+
+<!-- No hyphens in names. at all. -->
+
+<template name="chatarea">
+  <div class="chatarea">
+    {{#each messages}}
+    {{> chat}}
+    {{/each}}
+  </div>
+  {{> textentry}}
+</template>
+
+<template name="textentry">
+  <form class="newchat">
+    <input class="chatinput" type="text" name="text">
+  </form>
+</template>
+
