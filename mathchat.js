@@ -2,7 +2,7 @@ Messages = new Mongo.Collection("messages");
 
 if (Meteor.isClient) {
   // counter starts at 0
-  Session.setDefault('counter', 0);
+  //Session.setDefault('counter', 0);
 
   Template.chatarea.helpers({
     messages: function() {
@@ -21,20 +21,28 @@ if (Meteor.isClient) {
     user: "user",
     time: function() {
       var date = this.createdAt;
-      return date.getMonth() + "/" + date.getDay() + "@" +
-	date.getHours() + ":" + date.getMinutes();
+      var ret = date.getMonth() + "/" + date.getDay() + "@" +
+                date.getHours() + ":";
+      if(date.getMinutes() < 10){
+        ret += "0" + date.getMinutes();
+      }
+      else {
+        ret += date.getMinutes();
+      }
+      return ret;
     }
   });
 
   Template.textentry.events({
-    'submit .newchat': function (evt) {
+    'keypress .chatinput': function (evt) {
+        if (evt.key != 13) return;
       var text = evt.target.text.value;
       Messages.insert({
-	text: text,
-	createdAt: new Date()
+          text: text,
+          createdAt: new Date()
       });
       evt.target.text.value = "";
-      evt.preventDefault();
+      return false;
     }
   });
 }

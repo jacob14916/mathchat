@@ -3,12 +3,28 @@
 </head>
 
 <body>
-  <h1>mathchat 0.1</h1>
+
+  <h1 id="header">mathchat 0.1</h1>
+  <div id="navigationbar">
+      <ul id="navigationbuttons">
+          <li>Button 1</li>
+          <li>Button 2</li>
+          <li>Button 3</li>
+      </ul>
+  </div>
+  
   {{> chatarea}}
+  <div class="sidepanel">
+      Additional info: possibly room name, present users, LaTeX reference, etc
+  </div>
 </body>
 
 <template name="chat">
-  <p>{{user}} <span style="color:grey">{{time}}</span>: {{text}}</p>
+  <p>
+    <span style="font-weight=bold">{{user}}</span> 
+    <span style="color:grey">{{time}}</span>: {{text}}
+        
+    </p>
 </template>
 
 <!-- No hyphens in names. at all. -->
