@@ -2,39 +2,62 @@ Messages = new Mongo.Collection("messages");
 
 if (Meteor.isClient) {
   // counter starts at 0
-  Session.setDefault('counter', 0);
-
-  Template.chatarea.helpers({
-    messages: function() {
-      return Messages.find({}, {sort: ["createdAt"]});
-    }
-  });
+  Session.setDefault('currentmsg', null);
   
   Template.chatarea.events({
-    'submit .newchat': function (evt, inst) {
-      var chatdiv = inst.find(".chatarea");
-      chatdiv.scrollTop = chatdiv.scrollHeight;
+    'keypress .chatinput': function (evt, inst) {
+      if (evt.keyCode != 13) return;
     }
   });
 
+  Template.chatarea.helpers({
+    messages: function () {
+      return Messages.find({}, {sort: ["createdAt"]});
+    },
+    currentmsg: function () {
+      return Session.get("currentmsg");
+    }
+  });
+
+  Template.chatarea.onRendered(function () {
+    var that = this;
+    this.autorun(function () {
+      // this keeps the chat scrolled all the way to the bottom
+      var justToTriggerReactivity = Messages.find({}).fetch();
+      var chatdiv = that.find(".chatarea");
+      chatdiv.scrollTop = chatdiv.scrollHeight;
+    });
+  });
+  
   Template.chat.helpers({
     user: "user",
     time: function() {
       var date = this.createdAt;
-      return date.getMonth() + "/" + date.getDay() + "@" +
+      return (date.getMonth()+1) + "/" + date.getDate() + "@" +
 	date.getHours() + ":" + date.getMinutes();
     }
   });
 
   Template.textentry.events({
-    'submit .newchat': function (evt) {
-      var text = evt.target.text.value;
-      Messages.insert({
-	text: text,
-	createdAt: new Date()
-      });
-      evt.target.text.value = "";
-      evt.preventDefault();
+    'keypress .chatinput': function (evt) {
+      switch (evt.keyCode) {
+      case 13: // enter
+	var text = evt.target.value;
+	Messages.insert({
+	  text: text,
+	  createdAt: new Date()
+	});
+	evt.target.value = "";
+	evt.preventDefault();
+	break;
+      }
+    },
+    'keyup .chatinput': function (evt, inst) {
+      if (evt.target.value) {
+	Session.set("currentmsg",{createdAt: new Date(), text: evt.target.value});
+      } else {
+	Session.set("currentmsg", null);
+      }
     }
   });
 }

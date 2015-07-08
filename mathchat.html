@@ -8,7 +8,8 @@
 </body>
 
 <template name="chat">
-  <p>{{user}} <span style="color:grey">{{time}}</span>: {{text}}</p>
+  <p>{{user}} <span style="color:grey">{{time}}</span>:
+    {{#mathjax}}<span>{{{text}}}</span>{{/mathjax}}</p>
 </template>
 
 <!-- No hyphens in names. at all. -->
@@ -18,13 +19,14 @@
     {{#each messages}}
     {{> chat}}
     {{/each}}
+    {{#if currentmsg}}
+    <span style="color:grey">{{> chat currentmsg}}</span>
+    {{/if}}
   </div>
   {{> textentry}}
 </template>
 
 <template name="textentry">
-  <form class="newchat">
-    <input class="chatinput" type="text" name="text">
-  </form>
+  <textarea class="chatinput" type="text" form="newchat" name="text"> </textarea>
 </template>
 
