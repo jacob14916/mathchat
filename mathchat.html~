@@ -20,8 +20,16 @@
 </body>
 
 <template name="chat">
+<<<<<<< HEAD
   <p>{{user}} <span style="color:grey">{{time}}</span>:
     {{#mathjax}}<span>{{{text}}}</span>{{/mathjax}}</p>
+=======
+  <p>
+    <span style="font-weight=bold">{{user}}</span> 
+    <span style="color:grey">{{time}}</span>: {{text}}
+        
+    </p>
+>>>>>>> origin/Adding-some-CSS
 </template>
 
 <!-- No hyphens in names. at all. -->

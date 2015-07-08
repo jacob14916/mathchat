@@ -23,6 +23,12 @@ body {
 
 .chatarea {
     position: absolute;
+<<<<<<< HEAD
+    height: calc(100% - 120px);
+    width: calc(100% - 20px);
+    overflow-x: scroll;
+}
+=======
     
     top: 120px;
     left: 20px;
@@ -101,3 +107,4 @@ body {
 }
 
 
+>>>>>>> origin/Adding-some-CSS

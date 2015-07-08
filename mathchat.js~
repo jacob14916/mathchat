@@ -2,6 +2,7 @@ Messages = new Mongo.Collection("messages");
 
 if (Meteor.isClient) {
   // counter starts at 0
+<<<<<<< HEAD
   Session.setDefault('currentmsg', null);
   
   Template.chatarea.events({
@@ -9,6 +10,9 @@ if (Meteor.isClient) {
       if (evt.keyCode != 13) return;
     }
   });
+=======
+  //Session.setDefault('counter', 0);
+>>>>>>> origin/Adding-some-CSS
 
   Template.chatarea.helpers({
     messages: function () {
@@ -33,6 +37,10 @@ if (Meteor.isClient) {
     user: "user",
     time: function() {
       var date = this.createdAt;
+<<<<<<< HEAD
+      return (date.getMonth()+1) + "/" + date.getDate() + "@" +
+	date.getHours() + ":" + date.getMinutes();
+=======
       var ret = date.getMonth() + "/" + date.getDay() + "@" +
                 date.getHours() + ":";
       if(date.getMinutes() < 10){
@@ -42,11 +50,13 @@ if (Meteor.isClient) {
         ret += date.getMinutes();
       }
       return ret;
+>>>>>>> origin/Adding-some-CSS
     }
   });
 
   Template.textentry.events({
     'keypress .chatinput': function (evt) {
+<<<<<<< HEAD
       switch (evt.keyCode) {
       case 13: // enter
 	var text = evt.target.value;
@@ -65,6 +75,16 @@ if (Meteor.isClient) {
       } else {
 	Session.set("currentmsg", null);
       }
+=======
+        if (evt.key != 13) return;
+      var text = evt.target.text.value;
+      Messages.insert({
+          text: text,
+          createdAt: new Date()
+      });
+      evt.target.text.value = "";
+      return false;
+>>>>>>> origin/Adding-some-CSS
     }
   });
 }
