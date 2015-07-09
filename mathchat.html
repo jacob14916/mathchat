@@ -1,22 +1,32 @@
 <head>
-  <title>mathchat</title>
+  <title>mathchat 0.1</title>
+  <link rel="icon" 
+      type="image/png" 
+      href="favicon.png">
 </head>
 
 <body>
 
-  <h1 id="header">mathchat 0.1</h1>
-  <div id="navigationbar">
-      <ul id="navigationbuttons">
-          <li>Button 1</li>
-          <li>Button 2</li>
-          <li>Button 3</li>
-      </ul>
-  </div>
+  <!-- Header includes navigation bar and title -->
+    <div id="header">
+      <img id="title" src="logo512.png" />
+      <div id="navigationbar">
+        
+      </div>
+    </div>
   
   {{> chatarea}}
   <div class="sidepanel">
-      Additional info: possibly room name, present users, LaTeX reference, etc
-  </div>
+      <div id="roomname">
+        Roomname goes here
+      </div>
+      <div id="currentusers">
+        Current users go here
+      </div>
+      <div id="reference">
+        LaTeX quick reference goes here
+      </div>
+    </div>
 </body>
 
 <template name="chat">
@@ -28,14 +38,23 @@
 
 <template name="chatarea">
   <div class="chatarea">
-    {{#each messages}}
-    {{> chat}}
-    {{/each}}
-    {{#if currentmsg}}
-    <span style="color:grey">{{> chat currentmsg}}</span>
-    {{/if}}
+    <div id="pin">
+      Pinned messages go here
+    </div>
+    <div id="messages">
+      {{#each messages}}
+        {{> chat}}
+      {{/each}}
+      {{#if currentmsg}}
+        <span style="color:grey">{{> chat currentmsg}}</span>
+      {{/if}}
+    </div>
+    <div id="preview">
+      Preview panel goes here
+    </div>
+    {{> textentry}}
   </div>
-  {{> textentry}}
+  
 </template>
 
 <template name="textentry">
