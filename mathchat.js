@@ -33,7 +33,7 @@ if (Meteor.isClient) {
     user: "user",
     time: function() {
       var date = this.createdAt;
-      var ret = date.getMonth() + "/" + date.getDay() + "@" +
+      var ret = (1+date.getMonth()) + "/" + date.getDate() + "@" +
                 date.getHours() + ":";
       if(date.getMinutes() < 10){
         ret += "0" + date.getMinutes();
