@@ -6,8 +6,16 @@ body {
    background-color: #C5E3BF; 
 }
 
+#rest-of-page {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 100px;
+    bottom: 0px;
+}
+
 #header {
-    position: fixed;
+    position: absolute;
     display: block;
     
     top: 0px;
@@ -18,7 +26,7 @@ body {
     
     background-color: white;
     
-    z-index: 100;
+    z-index: -1;
     
     font-family: 'Titillium-Web', sans-serif;
 }
@@ -52,9 +60,9 @@ body {
     border-bottom-color: green;
     
     bottom: 0px;
-    height: 30px;
+    height: 20px;
     width: 100%;
-    z-index: 100;
+    padding: 5px;
 }
 
 /* Side panel */
@@ -109,7 +117,7 @@ body {
 .chatarea {
     position: absolute;
     
-    top: 120px;
+    top: 20px;
     left: 20px;
     bottom: 10px;
     right: 270px;
@@ -175,7 +183,7 @@ body {
     height: 40px;
     bottom: 0px;
     left: 0px;
-    width: 100%;
+    width: calc(100% - 20px);
     font-family: 'Titillium-Web', sans-serif;
     overflow-y: scroll;
     word-wrap: break-word;
@@ -184,4 +192,21 @@ body {
     padding: 8px;
     border: 1px solid green;
     /* Total height is 56 px */
+}
+
+/* "buttons" in the navigation bar */
+.navbutton {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+.navbutton:hover{
+    background-color: #C0C0C0;
+}
+.navbutton:link{
+    color: black;
+    text-decoration: none;
+}
+.navbutton:visited{
+    color: black;
+    text-decoration: none;
 }

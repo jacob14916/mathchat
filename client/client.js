@@ -1,5 +1,19 @@
 // counter starts at 0
 Session.setDefault('currentmsg', null);
+Session.setDefault('currentroom', "lobby");
+
+Router.configure({
+  layoutTemplate: "layout"
+});
+
+Router.route('/', function () {
+  this.render("homepage");
+});
+
+Router.route('/room/:roomname', function () {
+  this.render("chatroom");
+  Session.set('currentroom', this.params.roomname);
+});
 
 Template.chatarea.events({
   'keypress .chatinput': function (evt, inst) {
@@ -9,7 +23,7 @@ Template.chatarea.events({
 
 Template.chatarea.helpers({
   messages: function () {
-    return Messages.find({}, {sort: ["createdAt"]});
+    return Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]});
   },
   currentmsg: function () {
     return Session.get("currentmsg");
@@ -49,7 +63,8 @@ Template.textentry.events({
       var text = evt.target.value;
       Messages.insert({
 	text: text,
-	createdAt: new Date()
+	createdAt: new Date(),
+	room: Session.get("currentroom")
       });
       evt.target.value = "";
       evt.preventDefault();
@@ -58,9 +73,18 @@ Template.textentry.events({
   },
   'keyup .chatinput': function (evt, inst) {
     if (evt.target.value) {
-      Session.set("currentmsg",{createdAt: new Date(), text: evt.target.value});
+      Session.set("currentmsg",{createdAt: new Date(),
+				text: evt.target.value});
     } else {
       Session.set("currentmsg", null);
     }
   }
 });
+
+Template.header.events({
+  'submit .roomnav':function(evt) {
+    evt.preventDefault();
+    Router.go('/room/' + evt.target.room.value);
+  }
+});
+

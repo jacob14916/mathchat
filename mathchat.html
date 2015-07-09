@@ -4,17 +4,29 @@
       type="image/png" 
       href="favicon.png">
 </head>
-
 <body>
+</body>
 
-  <!-- Header includes navigation bar and title -->
-    <div id="header">
-      <img id="title" src="logo512.png" />
-      <div id="navigationbar">
-        
-      </div>
-    </div>
-  
+<template name="layout">
+  {{> header}}
+  <div id="rest-of-page">
+  {{> yield}}
+  </div>
+</template>
+
+<template name="homepage">
+  <div style="padding: 10px; display:block; font-size: 20px; width:100%">
+    <img src="/logo512.png" width="512px" style="display:block;margin-left:auto;margin-right:auto">
+    <br>
+    Welcome to mathchat: math-enabled chat rooms, courtesy of
+    <a href="http://meteor.com">Meteor</a> and <a href="http://mathjax.org">Mathjax</a>.
+    <br>
+    Find us on github <a href="http://github.com/jacob14916/mathchat">here</a>.
+  </div>
+</template>
+
+
+<template name="chatroom">
   {{> chatarea}}
   <div class="sidepanel">
       <div id="roomname">
@@ -27,7 +39,26 @@
         LaTeX quick reference goes here
       </div>
     </div>
-</body>
+</template>
+
+<template name="header">
+  
+  <!-- Header includes navigation bar and title -->
+  <div id="header">
+    <img id="title" src="/logo512.png" />
+    <div id="navigationbar">
+      <a class="navbutton" href="/">Home</a>
+      <a class="navbutton" href="/room/lobby"> Lobby </a>
+      <a class="navbutton" href="/room/help"> Help </a>
+      <span style="float:right;margin-right:10px">
+	Go to room:
+      <form class="roomnav" style="display:inline">
+	<input type="text" name="room">
+	</form>
+      </span>
+    </div>
+  </div>
+</template>
 
 <template name="chat">
   <p>{{user}} <span style="color:grey">{{time}}</span>:
