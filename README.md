@@ -2,4 +2,4 @@
 
 Math chat using Meteor + MathJax.
 
-Currently hosted at [mathchat.meteor.com](mathchat.meteor.com)
+Currently hosted at [mathchat.meteor.com](http://mathchat.meteor.com)
