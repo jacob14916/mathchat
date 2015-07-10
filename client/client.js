@@ -41,7 +41,9 @@ Template.chatarea.onRendered(function () {
 });
 
 Template.chat.helpers({
-  user: "user",
+  user: function() {
+      return this.username;
+  },
   time: function() {
     var date = this.createdAt;
     var ret = (1+date.getMonth()) + "/" + date.getDate() + "@" +
@@ -61,10 +63,19 @@ Template.textentry.events({
     switch (evt.keyCode) {
     case 13: // enter
       var text = evt.target.value;
+      var name;
+      if(Meteor.user() === null) {
+          name = "Guest";
+      }
+      else {
+          name = Meteor.user().username;
+      }
       Messages.insert({
-	text: text,
-	createdAt: new Date(),
-	room: Session.get("currentroom")
+        text: text,
+        createdAt: new Date(),
+        room: Session.get("currentroom"),
+        owner: Meteor.userId(),
+        username: name
       });
       evt.target.value = "";
       evt.preventDefault();
@@ -88,3 +99,6 @@ Template.header.events({
   }
 });
 
+Accounts.ui.config({
+  passwordSignupFields: "USERNAME_ONLY"
+});
