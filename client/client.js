@@ -12,13 +12,7 @@ Router.route('/', function () {
 
 Router.route('/room/:roomname', function () {
   this.render("chatroom");
-  Session.set('currentroom', this.params.roomname);
-});
-
-Template.chatarea.events({
-  'keypress .chatinput': function (evt, inst) {
-    if (evt.keyCode != 13) return;
-  }
+  Session.set('currentroom', this.params.roomname.toLowerCase()); // toLowerCase would toss out case sensitivity
 });
 
 Template.chatarea.helpers({
@@ -72,7 +66,7 @@ Template.textentry.events({
       }
       Messages.insert({
         text: text,
-        createdAt: new Date(),
+        createdAt: new Date(TimeSync.serverTime(Date.now())),
         room: Session.get("currentroom"),
         owner: Meteor.userId(),
         username: name
