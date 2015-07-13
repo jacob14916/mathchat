@@ -30,7 +30,7 @@
   {{> chatarea}}
   <div class="sidepanel">
       <div id="roomname">
-        Roomname goes here
+        {{roomname}}
       </div>
       <div id="currentusers">
         Current users go here
@@ -80,12 +80,9 @@
       {{#each messages}}
         {{> chat}}
       {{/each}}
-      {{#if currentmsg}}
-        <span style="color:grey">{{> chat currentmsg}}</span>
-      {{/if}}
     </div>
     <div id="preview">
-      Preview panel goes here
+      {{#mathjax}}<span>{{{currentmsg}}}</span>{{/mathjax}}
     </div>
     {{> textentry}}
   </div>
@@ -94,5 +91,6 @@
 
 <template name="textentry">
   <textarea class="chatinput" type="text" form="newchat" name="text"> </textarea>
+  <input type="button"> 
 </template>
 

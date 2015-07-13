@@ -1,6 +1,7 @@
 // counter starts at 0
 Session.setDefault('currentmsg', null);
-Session.setDefault('currentroom', "lobby");
+Session.setDefault('currentroom', null);
+Session.setDefault('roomid', null);
 
 Router.configure({
   layoutTemplate: "layout"
@@ -20,7 +21,9 @@ Template.chatarea.helpers({
     return Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]});
   },
   currentmsg: function () {
-    return Session.get("currentmsg");
+    if(Session.get('currentmsg')) {
+        return Session.get('currentmsg').text;
+    }
   }
 });
 
@@ -29,7 +32,7 @@ Template.chatarea.onRendered(function () {
   this.autorun(function () {
     // this keeps the chat scrolled all the way to the bottom
     var justToTriggerReactivity = Messages.find({}).fetch();
-    var chatdiv = that.find(".chatarea");
+    var chatdiv = that.find("#messages");
     chatdiv.scrollTop = chatdiv.scrollHeight;
   });
 });
@@ -96,3 +99,11 @@ Template.header.events({
 Accounts.ui.config({
   passwordSignupFields: "USERNAME_ONLY"
 });
+
+Template.chatroom.helpers({
+   roomname: function() {
+       return Session.get('currentroom');
+   } 
+});
+
+

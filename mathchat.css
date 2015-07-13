@@ -82,21 +82,26 @@ body {
     top: 0;
     left: 0;
     right: 0;
-    height: 60px;
-    border-radius: 3px;
+    height: 30px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
     padding: 8px;
+    text-align: center;
+    font-size: 20px;
     /* Current total height: 60 + 16 = 76 px */
 }
 
 #currentusers {
     position: absolute;
-    top: 80px; /* leaves 3 pixels above */
+    top: 46px; /* leaves 3 pixels above */
     left: 0;
     right: 0;
-    height: 150px;
-    border-radius: 3px;
+    height: 184px;
+    border-bottom-left-radius: 3px;
+    border-bottom-right-radius: 3px;
     padding: 8px;
     background-color: white;
+    overflow-y: scroll;
     /* Current total height: 150 + 16 = 166px */
 }
 
@@ -182,7 +187,7 @@ body {
     height: 40px;
     bottom: 0px;
     left: 0px;
-    width: calc(100% - 20px);
+    width: calc(100% - 70px);
     font-family: 'Titillium-Web', sans-serif;
     overflow-y: scroll;
     word-wrap: break-word;
@@ -191,6 +196,18 @@ body {
     padding: 8px;
     border: 1px solid green;
     /* Total height is 56 px */
+}
+
+#previewButton {
+    position: absolute;
+    height: 40px;
+    bottom: 0px;
+    right: 0px;
+    width: 40px;
+    background-color: silver;
+    border: 1px solid green;
+    color: black;
+    padding: 8px;
 }
 
 /* "buttons" in the navigation bar */
