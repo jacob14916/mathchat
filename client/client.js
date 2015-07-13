@@ -67,25 +67,63 @@ Template.textentry.events({
       else {
           name = Meteor.user().username;
       }
-      Messages.insert({
-        text: text,
-        createdAt: new Date(TimeSync.serverTime(Date.now())),
-        room: Session.get("currentroom"),
-        owner: Meteor.userId(),
-        username: name
-      });
-      evt.target.value = "";
-      evt.preventDefault();
-      break;
+      if(text) {
+        Messages.insert({
+            text: text,
+            createdAt: new Date(TimeSync.serverTime(Date.now())),
+            room: Session.get("currentroom"),
+            owner: Meteor.userId(),
+            username: name
+        });
+        evt.target.value = "";
+        Session.set('currentmsg', null);
+        evt.preventDefault();
+        break;
+      }
     }
   },
-  'keyup .chatinput': function (evt, inst) {
+  'click #sendbutton': function(evt, inst) {
+      var area = inst.find(".chatinput");
+      var text = area.value;
+      var name;
+      if(Meteor.user() === null) {
+          name = "Guest";
+      }
+      else {
+          name = Meteor.user().username;
+      }
+      if(text !== null) {
+        Messages.insert({
+          text: text,
+          createdAt: new Date(TimeSync.serverTime(Date.now())),
+          room: Session.get("currentroom"),
+          owner: Meteor.userId(),
+          username: name
+        });
+        area.value = "";
+        Session.set('currentmsg', null);
+        evt.preventDefault();
+      }
+  },
+  // This code was the previous mechanism for previewing
+  /* 'keyup .chatinput': function (evt, inst) {
     if (evt.target.value) {
       Session.set("currentmsg",{createdAt: new Date(),
 				text: evt.target.value});
     } else {
       Session.set("currentmsg", null);
     }
+  }, */
+  'click #previewbutton': function (evt, inst) {
+      var area = inst.find(".chatinput");
+      var str = area.value;
+      if(str !== null) {
+          Session.set('currentmsg', {createdAt: new Date(), text: str});
+      }
+      else {
+          Session.set('currentmsg', null);
+      }
+      evt.preventDefault();
   }
 });
 

@@ -78,22 +78,23 @@ body {
 
 #roomname {
     position: absolute;
-    background-color: white;
+    background-color: gray;
     top: 0;
     left: 0;
     right: 0;
-    height: 30px;
+    height: 25px;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     padding: 8px;
     text-align: center;
     font-size: 20px;
+    color: white;
     /* Current total height: 60 + 16 = 76 px */
 }
 
 #currentusers {
     position: absolute;
-    top: 46px; /* leaves 3 pixels above */
+    top: 41px; /* leaves 3 pixels above */
     left: 0;
     right: 0;
     height: 184px;
@@ -177,6 +178,7 @@ body {
     border-radius: 3px;
     padding: 8px;
     border: 1px solid green;
+    overflow-y: scroll;
     /* Total height: 60 + 16 = 76 px */
     
 }
@@ -198,16 +200,28 @@ body {
     /* Total height is 56 px */
 }
 
-#previewButton {
+#previewbutton {
     position: absolute;
-    height: 40px;
-    bottom: 0px;
-    right: 0px;
-    width: 40px;
-    background-color: silver;
+    height: 29px;
+    bottom: 29px;
+    right: 0;
+    width: 52px;
+    background-color: white;
+    border: 1px solid white;
+    color: green;
+    padding: 1px;
+}
+
+#sendbutton {
+    position: absolute;
+    height: 29px;
+    bottom: 0;
+    right: 0;
+    width: 52px;
+    background-color: green;
     border: 1px solid green;
-    color: black;
-    padding: 8px;
+    color: white;
+    padding: 1px;
 }
 
 /* "buttons" in the navigation bar */
