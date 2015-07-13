@@ -9,3 +9,7 @@ autopublish
 insecure
 mrt:mathjax
 iron:router
+accounts-ui
+accounts-password
+mizzao:timesync
+mizzao:user-status
