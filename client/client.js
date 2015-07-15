@@ -24,7 +24,36 @@ Template.chatarea.helpers({
     if(Session.get('currentmsg')) {
         return Session.get('currentmsg').text;
     }
+  },
+  pinnedmessages: function() {
+      if(Messages.find({room: Session.get('currentroom'), pinned: true}).count() === 0) 
+        return null;
+      else
+        return Messages.find({room: Session.get('currentroom'), pinned: true});
+  },
+  pinattributes: function() {
+      return {
+        id: this.identifier,
+        class: "removepin",
+        type: "image",
+        src: "/removemsg.png"
+      };
   }
+});
+
+Template.chatarea.events({
+    'click .pinicon, click .removepin': function(evt, inst) {
+        var id = evt.target.id;
+        if(id !== null) {
+            var doc = Messages.findOne({room: Session.get('currentroom'), identifier: id});
+            var time = doc.createdAt;
+            if(doc !== null) {
+                Messages.update(doc._id, {$set: {pinned: !(this.pinned), createdAt: time}});
+            }
+        }
+    },
+    
+    
 });
 
 Template.chatarea.onRendered(function () {
@@ -40,6 +69,14 @@ Template.chatarea.onRendered(function () {
 Template.chat.helpers({
   user: function() {
       return this.username;
+  },
+  pinid: function() {
+      return {
+          id: this.identifier,
+          type: "image",
+          class: "pinicon",
+          src: "/pinmessageicon.png"
+      };
   },
   time: function() {
     var date = this.createdAt;
@@ -68,12 +105,16 @@ Template.textentry.events({
           name = Meteor.user().username;
       }
       if(text) {
+        var counter = Messages.find({}, {sort: ["createdAt"]}).count();
+        var str = "message" + (counter+1);
         Messages.insert({
+            identifier: str,
             text: text,
             createdAt: new Date(TimeSync.serverTime(Date.now())),
             room: Session.get("currentroom"),
             owner: Meteor.userId(),
-            username: name
+            username: name,
+            pinned: false
         });
         evt.target.value = "";
         Session.set('currentmsg', null);
@@ -93,7 +134,11 @@ Template.textentry.events({
           name = Meteor.user().username;
       }
       if(text !== null) {
+        var counter = Messages.find({}, {sort: ["createdAt"]}).count();
+        var str = "message" + (counter+1);
         Messages.insert({
+          identifier: str,
+          pinned: false,
           text: text,
           createdAt: new Date(TimeSync.serverTime(Date.now())),
           room: Session.get("currentroom"),
@@ -143,5 +188,4 @@ Template.chatroom.helpers({
        return Session.get('currentroom');
    } 
 });
-
 

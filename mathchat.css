@@ -142,10 +142,11 @@ body {
     right: 0;
     height: 70px;
     background-color: white;
-    padding: 8px;
+    padding: 5px 8px 8px 8px;
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     border: 1px solid green;
+    overflow-y: scroll;
     
     /* Total height: 70 + 16 + 2 = 88 */
 }
@@ -153,20 +154,30 @@ body {
 /* Area that displays the chat messages */
 #messages {
     position: absolute;
-    top: 88px; /* matches the pinned post */
+    top: 85px; /* matches the pinned post */
     left: 0;
     right: 0;
     bottom: 152px; /* input chat + preview pane + 10px */
     background-color: white;
     
-    padding: 8px;
+    padding: 5px 8px 8px 8px;
     border: 1px solid green;
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     
     overflow-y: scroll;
 }
+#messages p {
+    position: relative;
+    margin-top: 3px;
+    margin-bottom: 8px; /* This is what google chat uses */
+}
 
+#pin p {
+    position: relative;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
 /*Area the displays preview*/
 #preview {
     position: absolute;
@@ -210,6 +221,7 @@ body {
     border: 1px solid white;
     color: green;
     padding: 1px;
+    cursor: pointer;
 }
 
 #sendbutton {
@@ -222,6 +234,7 @@ body {
     border: 1px solid green;
     color: white;
     padding: 1px;
+    cursor: pointer;
 }
 
 /* "buttons" in the navigation bar */
@@ -255,4 +268,23 @@ body {
 #login-dropdown-list {
     position: absolute;
     left: -200px;
+}
+
+.pinicon {
+    position: absolute;
+    float: right;
+    height: 15px;
+    top: 0;
+    right: 0;
+    cursor: point;
+
+}
+
+.removepin {
+    position: absolute;
+    float: right;
+    height: 15px;
+    top: 0;
+    right: 0;
+    cursor: point;
 }

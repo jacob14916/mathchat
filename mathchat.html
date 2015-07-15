@@ -66,7 +66,7 @@
 
 <template name="chat">
   <p>{{user}} <span style="color:grey">{{time}}</span>:
-    {{#mathjax}}<span>{{{text}}}</span>{{/mathjax}}</p>
+    {{#mathjax}}<span>{{text}}</span>{{/mathjax}} <input {{pinid}}/> </p>
 </template>
 
 <!-- No hyphens in names. at all. -->
@@ -74,7 +74,14 @@
 <template name="chatarea">
   <div class="chatarea">
     <div id="pin">
-      Pinned messages go here
+      {{#if pinnedmessages}}
+        {{#each pinnedmessages}}
+          <p><span style="color:silver">{{username}}</span>:
+          {{#mathjax}}<span>{{text}}</span>{{/mathjax}}<input {{pinattributes}}/></p>
+        {{/each}}
+      {{else}}
+        <span style="color:silver">Pin the problem statement/important messages here!</span>
+      {{/if}}
     </div>
     <div id="messages">
       {{#each messages}}
@@ -82,7 +89,11 @@
       {{/each}}
     </div>
     <div id="preview">
-      {{#mathjax}}<span>{{{currentmsg}}}</span>{{/mathjax}}
+      {{#if currentmsg}}
+        {{#mathjax}}<span>{{currentmsg}}</span>{{/mathjax}}
+      {{else}}
+        <span style="color: silver">Click the preview button to preview your message!</span>
+      {{/if}}
     </div>
     {{> textentry}}
   </div>
