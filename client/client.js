@@ -1,19 +1,27 @@
 // counter starts at 0
 Session.setDefault('currentmsg', null);
 Session.setDefault('currentroom', null);
-Session.setDefault('roomid', null);
+Session.setDefault('username', "Guest-oops");
 
 Router.configure({
   layoutTemplate: "layout"
 });
 
 Router.route('/', function () {
+  Meteor.call("leaveRoom", null, true);
+  Session.set('currentroom', null);
   this.render("homepage");
 });
 
 Router.route('/room/:roomname', function () {
   this.render("chatroom");
-  Session.set('currentroom', this.params.roomname.toLowerCase()); // toLowerCase would toss out case sensitivity
+  var roomname = this.params.roomname.toLowerCase(); // toLowerCase would toss out case sensitivity
+  Tracker.nonreactive(function () {
+    if (!Rooms.find(roomname).count()) Rooms.insert({_id: roomname, currentusers: []});
+  });
+  Meteor.call("leaveRoom", null, true);
+  Session.set('currentroom', roomname);
+  Meteor.call("joinRoom", roomname);
 });
 
 Template.chatarea.helpers({
@@ -60,19 +68,12 @@ Template.textentry.events({
     switch (evt.keyCode) {
     case 13: // enter
       var text = evt.target.value;
-      var name;
-      if(Meteor.user() === null) {
-          name = "Guest";
-      }
-      else {
-          name = Meteor.user().username;
-      }
       Messages.insert({
         text: text,
         createdAt: new Date(TimeSync.serverTime(Date.now())),
         room: Session.get("currentroom"),
         owner: Meteor.userId(),
-        username: name
+        username: Session.get('username')
       });
       evt.target.value = "";
       evt.preventDefault();
@@ -81,8 +82,7 @@ Template.textentry.events({
   },
   'keyup .chatinput': function (evt, inst) {
     if (evt.target.value) {
-      Session.set("currentmsg",{createdAt: new Date(),
-				text: evt.target.value});
+      Session.set("currentmsg",{text: evt.target.value});
     } else {
       Session.set("currentmsg", null);
     }
@@ -103,7 +103,34 @@ Accounts.ui.config({
 Template.chatroom.helpers({
    roomname: function() {
        return Session.get('currentroom');
-   } 
+   },
+  currentusers: function() {
+    var display = "";
+    var room = Rooms.findOne({_id: Session.get("currentroom")});
+    if (room) {
+      var users =  _.countBy(room.currentusers, 'name');
+      for (var name in users) {
+	var count = users[name];
+	display += name + ((count>1)?" (x" + count + ")":"")+"<br>";
+      }
+    }
+    return display;
+  }
 });
 
+Meteor.startup(function() {
+  Tracker.autorun(function () {
+    var user = Meteor.user();
+    Meteor.call("leaveRoom", null, true);
+    Meteor.call("registerClient", function (err, name) {
+      Session.set("username", name);
+    });
+    Tracker.nonreactive(function () {
+      var room = Session.get("currentroom");
+      if (room) {
+	Meteor.call("joinRoom", room);
+      }
+    });
+  });
+});
 
