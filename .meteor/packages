@@ -13,3 +13,5 @@ accounts-ui
 accounts-password
 mizzao:timesync
 mizzao:user-status
+underscore
+jquery
