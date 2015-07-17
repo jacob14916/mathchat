@@ -1,6 +1,6 @@
 /* CSS declarations go here */
 
-@import url(http://fonts.googleapis.com/css?family=Titillium+Web&subset=latin,latin-ext);
+@import url("http://fonts.googleapis.com/css?family=Titillium+Web&subset=latin,latin-ext");
 
 body {
    background-color: #C5E3BF; 
@@ -57,7 +57,7 @@ body {
     border-bottom-style: solid;
     border-bottom-color: green;
     
-    bottom: 0px;
+    bottom: 0;
     height: 20px;
     width: 100%;
     padding: 5px;
@@ -69,7 +69,7 @@ body {
     font-family: "Titillium-Web", sans-serif;
     position: fixed;
     top: 120px;
-    right: 0px;
+    right: 0;
     width: 250px;
     height: 85%;
     border-radius: 3px;
@@ -131,7 +131,7 @@ body {
     
     word-wrap: break-word;
     
-    font-family: 'Titillium-Web', sans-serif;
+    font-family: "Titillium-Web", sans-serif;
     
 }
 /* Area for the pinned posts */
@@ -157,7 +157,7 @@ body {
     top: 85px; /* matches the pinned post */
     left: 0;
     right: 0;
-    bottom: 152px; /* input chat + preview pane + 10px */
+    bottom: 172px; /* input chat + preview pane + 10px */
     background-color: white;
     
     padding: 5px 8px 8px 8px;
@@ -181,7 +181,7 @@ body {
 /*Area the displays preview*/
 #preview {
     position: absolute;
-    bottom: 66px; /* Adds 10 to the input chat */
+    bottom: 86px; /* Adds 10 to the input chat */
     height: 60px;
     left: 0;
     right: 0;
@@ -197,9 +197,9 @@ body {
 /* Chat input box */
 .chatinput{
     position: absolute;
-    height: 40px;
-    bottom: 0px;
-    left: 0px;
+    height: 60px;
+    bottom: 0;
+    left: 0;
     width: calc(100% - 70px);
     font-family: 'Titillium-Web', sans-serif;
     overflow-y: scroll;
@@ -213,13 +213,13 @@ body {
 
 #previewbutton {
     position: absolute;
-    height: 29px;
-    bottom: 29px;
-    right: 0;
-    width: 52px;
-    background-color: white;
-    border: 1px solid white;
-    color: green;
+    height: 30px;
+    bottom: 42px;
+    right: -5px;
+    width: 55px;
+    background-color: green;
+    border: 2px solid white;
+    color: white;
     padding: 1px;
     cursor: pointer;
 }
@@ -228,13 +228,17 @@ body {
     position: absolute;
     height: 29px;
     bottom: 0;
-    right: 0;
-    width: 52px;
+    right: -5px;
+    width: 55px;
     background-color: green;
-    border: 1px solid green;
+    border: 2px solid white;
     color: white;
     padding: 1px;
     cursor: pointer;
+}
+
+#previewbutton:click, #sendbutton:click {
+    border-style: inset;
 }
 
 /* "buttons" in the navigation bar */
@@ -245,6 +249,7 @@ body {
     /* with the border of the bar */
     padding-top: 5px; 
     padding-bottom: 8px; 
+    transition: background-color 1s;
 }
 .navbutton:hover{
     background-color: #C0C0C0;

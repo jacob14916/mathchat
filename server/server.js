@@ -37,13 +37,13 @@ Meteor.methods({
     }}});
   },
   leaveRoom: function (room, all) {
-    Rooms.update(all?{}:room, {$pull: {currentusers: {connection: this.connection.id}}});
+    Rooms.update(all?{}:room, {$pull: {currentusers: {connection: this.connection.id}}}, {multi:true});
   }
 });
 
 Meteor.onConnection(function (conn) {
   conn.onClose(function () {
-    Rooms.update({}, {$pull: {currentusers: {connection: conn.id}}});
-    Guests.remove({connection: conn.id});
+    Rooms.update({}, {$pull: {currentusers: {connection: conn.id}}}, {multi: true});
+    Guests.remove({connection: conn.id}, {multi:true});
   }); 
 });

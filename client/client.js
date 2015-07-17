@@ -9,6 +9,7 @@ Router.configure({
 
 Router.route('/', function () {
   Meteor.call("leaveRoom", null, true);
+
   Session.set('currentroom', null);
   this.render("homepage");
 });
@@ -19,7 +20,7 @@ Router.route('/room/:roomname', function () {
   Tracker.nonreactive(function () {
     if (!Rooms.find(roomname).count()) Rooms.insert({_id: roomname, currentusers: []});
   });
-  Meteor.call("leaveRoom", null, true);
+  Meteor.call("leaveRoom", Session.get('currentroom'), true);
   Session.set('currentroom', roomname);
   Meteor.call("joinRoom", roomname);
 });
@@ -103,7 +104,11 @@ Template.textentry.events({
     switch (evt.keyCode) {
     case 13: // enter
       var text = evt.target.value;
-      if (text) {
+      if(text.length > 0) {
+          while(text.substring(0, 1) == " " || text.substring(0, 1) == "\n")
+            text = text.substring(1);
+      }
+      if (text && text !== "") {
         var counter = Messages.find({}, {sort: ["createdAt"]}).count();
         var str = "message" + (counter+1);
         Messages.insert({
@@ -115,16 +120,24 @@ Template.textentry.events({
             username: Session.get("username"),
             pinned: false
         });
-        evt.target.value = "";
+        
         Session.set('currentmsg', null);
-        evt.preventDefault();
-        break;
+        
+        
       }
+      evt.target.value = "";
+      evt.preventDefault();
+      break;
     }
   },
   'click #sendbutton': function(evt, inst) {
       var area = inst.find(".chatinput");
       var text = area.value;
+      if(text.length > 0) {
+        while(text.substring(0, 1) == " " || text.substring(0,1) == "\n") {
+          text = text.substring(1);
+        }
+      }
       var name;
       if(Meteor.user() === null) {
           name = "Guest";
@@ -132,7 +145,7 @@ Template.textentry.events({
       else {
           name = Meteor.user().username;
       }
-      if(text !== null) {
+      if(text !== null && text !== "") {
         var counter = Messages.find({}, {sort: ["createdAt"]}).count();
         var str = "message" + (counter+1);
         Messages.insert({
@@ -146,8 +159,9 @@ Template.textentry.events({
         });
         area.value = "";
         Session.set('currentmsg', null);
-        evt.preventDefault();
+        
       }
+      evt.preventDefault();
   },
   // This code was the previous mechanism for previewing
   /* 'keyup .chatinput': function (evt, inst) {
