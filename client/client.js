@@ -2,6 +2,7 @@
 Session.setDefault('currentmsg', null);
 Session.setDefault('currentroom', null);
 Session.setDefault('username', "Guest-oops");
+Session.setDefault('adjusting', false);
 
 Router.configure({
   layoutTemplate: "layout"
@@ -60,6 +61,23 @@ Template.chatarea.events({
                 Messages.update(doc._id, {$set: {pinned: !(this.pinned), createdAt: time}});
             }
         }
+    },  
+    'mousedown #splitbar': function(evt, inst) {
+        Session.set('adjusting', true);
+    },
+    'mouseup .chatarea': function(evt, inst) {
+        Session.set('adjusting', false);
+    },
+    'mousemove .chatarea': function(evt, inst) {
+        if(Session.get('adjusting')) {
+            var bar = inst.find("#splitbar");
+            bar.style.top = (evt.pageY - 120) + "px";
+            var pin = inst.find("#pin");
+            var msg = inst.find("#messages");
+            pin.style.height = (evt.pageY - 120) + "px";
+            messages.style.top = (evt.pageY - 120) + "px";
+            evt.preventDefault();
+        }
     }
 });
 
@@ -87,13 +105,27 @@ Template.chat.helpers({
   },
   time: function() {
     var date = this.createdAt;
+    var hours;
+    hours = date.getHours();
+    if(hours === 0) {
+        hours = 12;
+    }
+    else if (hours >= 13 && hours < 24) {
+        hours = hours - 12;
+    }
     var ret = (1+date.getMonth()) + "/" + date.getDate() + "@" +
-          date.getHours() + ":";
+          hours + ":";
     if(date.getMinutes() < 10){
       ret += "0" + date.getMinutes();
     }
     else {
       ret += date.getMinutes();
+    }
+    if(date.getHours() < 12) {
+        ret += "AM";
+    }
+    else {
+        ret += "PM";
     }
     return ret;
   }
