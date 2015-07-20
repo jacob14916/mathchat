@@ -3,6 +3,8 @@ Session.setDefault('currentmsg', null);
 Session.setDefault('currentroom', null);
 Session.setDefault('username', "Guest-oops");
 Session.setDefault('adjusting', false);
+//Session.setDefault('isFocused', false);
+Session.setDefault('messages', -1);
 
 Router.configure({
   layoutTemplate: "layout"
@@ -24,10 +26,20 @@ Router.route('/room/:roomname', function () {
   Meteor.call("leaveRoom", Session.get('currentroom'), true);
   Session.set('currentroom', roomname);
   Meteor.call("joinRoom", roomname);
+  Session.set('messages', Messages.find({room: roomname}).count());
+  var lastMessageArray = Messages.find({room: roomname}, {sort: ["createdAt"]}).fetch();
+  var lastMessage = lastMessageArray[lastMessageArray.length - 1];
+  if(lastMessage && lastMessage.username != Session.get('username')) {
+    $("#roomname").css("background-color", "blue");
+    document.title="pay attention";
+  }
+
 });
 
 Template.chatarea.helpers({
   messages: function () {
+    
+    Session.set('messages', Messages.find({room: Session.get('currentroom')}).count());
     return Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]});
   },
   currentmsg: function () {
@@ -88,6 +100,7 @@ Template.chatarea.onRendered(function () {
     var justToTriggerReactivity = Messages.find({}).fetch();
     var chatdiv = that.find("#messages");
     chatdiv.scrollTop = chatdiv.scrollHeight;
+    ////that.$("#messages").emoticonize();
   });
 });
 
@@ -133,6 +146,7 @@ Template.chat.helpers({
 
 Template.textentry.events({
   'keypress .chatinput': function (evt) {
+    $("#roomname").css("background-color", "gray");
     switch (evt.keyCode) {
     case 13: // enter
       var text = evt.target.value;
@@ -154,8 +168,6 @@ Template.textentry.events({
         });
         
         Session.set('currentmsg', null);
-        
-        
       }
       evt.target.value = "";
       evt.preventDefault();
@@ -213,7 +225,14 @@ Template.textentry.events({
           Session.set('currentmsg', null);
       }
       evt.preventDefault();
+  },
+  'focus .chatinput': function(evt, inst) {
+        $("#roomname").css("background-color", "gray");
+        //Session.set('isFocused', true);
   }
+  //'blur .chatinput': function(evt, inst) {
+     // Session.set('isFocused', false);
+  //}
 });
 
 Template.header.events({
@@ -245,6 +264,13 @@ Template.chatroom.helpers({
   }
 });
 
+Template.body.events({
+    'mousemove': function(evt, inst) {
+        $("#rest-of-page").css("background-color", "gray");
+    }
+});
+
+
 Meteor.startup(function() {
   Tracker.autorun(function () {
     var user = Meteor.user();
@@ -260,3 +286,4 @@ Meteor.startup(function() {
     });
   });
 });
+

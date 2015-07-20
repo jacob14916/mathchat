@@ -66,7 +66,7 @@
 
 <template name="chat">
   <p>{{user}} <span style="color:grey">{{time}}</span>:
-    {{#mathjax}}<span>{{text}}</span>{{/mathjax}} <input {{pinid}}/> </p>
+    {{#mathjax}}{{#autolink}}<span>{{text}}</span>{{/autolink}}{{/mathjax}} <input {{pinid}}/> </p>
 </template>
 
 <!-- No hyphens in names. at all. -->
@@ -77,7 +77,7 @@
       {{#if pinnedmessages}}
         {{#each pinnedmessages}}
           <p><span style="color:silver">{{username}}</span>:
-          {{#mathjax}}<span>{{text}}</span>{{/mathjax}}<input {{pinattributes}}/></p>
+          {{#mathjax}}{{#autolink}}<span>{{text}}</span>{{/autolink}}{{/mathjax}}<input {{pinattributes}}/></p>
         {{/each}}
       {{else}}
         <span style="color:silver">Pin the problem statement/important messages here!</span>

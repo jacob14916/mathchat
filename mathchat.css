@@ -194,15 +194,20 @@ body {
     margin-top: 4px;
     margin-bottom: 4px;
 }
+#pin p > input {
+    margin-left: 5px;
+}
 
 #messages p:hover {
     background-color: #F2F2F2;
-    transition: background-color 0.5s;
+    transition: background-color 0.25s;
+
 }
 
 #messages p:hover > .pinicon {
     display: inline;
     transition: display 0.5s;
+        margin-left: 5px;
 }
 /*Area the displays preview*/
 #preview {
@@ -275,7 +280,7 @@ body {
     /* with the border of the bar */
     padding-top: 5px; 
     padding-bottom: 8px; 
-    transition: background-color 1s;
+    transition: background-color 0.3s;
 }
 .navbutton:hover{
     background-color: #C0C0C0;
