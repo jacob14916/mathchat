@@ -3,8 +3,6 @@ Session.setDefault('currentmsg', null);
 Session.setDefault('currentroom', null);
 Session.setDefault('username', "Guest-oops");
 Session.setDefault('adjusting', false);
-//Session.setDefault('isFocused', false);
-Session.setDefault('messages', -1);
 
 Router.configure({
   layoutTemplate: "layout"
@@ -12,7 +10,6 @@ Router.configure({
 
 Router.route('/', function () {
   Meteor.call("leaveRoom", null, true);
-
   Session.set('currentroom', null);
   this.render("homepage");
 });
@@ -23,23 +20,13 @@ Router.route('/room/:roomname', function () {
   Tracker.nonreactive(function () {
     if (!Rooms.find(roomname).count()) Rooms.insert({_id: roomname, currentusers: []});
   });
-  Meteor.call("leaveRoom", Session.get('currentroom'), true);
+  Meteor.call("leaveRoom", roomname, true);
   Session.set('currentroom', roomname);
   Meteor.call("joinRoom", roomname);
-  Session.set('messages', Messages.find({room: roomname}).count());
-  var lastMessageArray = Messages.find({room: roomname}, {sort: ["createdAt"]}).fetch();
-  var lastMessage = lastMessageArray[lastMessageArray.length - 1];
-  if(lastMessage && lastMessage.username != Session.get('username')) {
-    $("#roomname").css("background-color", "blue");
-    document.title="pay attention";
-  }
-
 });
 
 Template.chatarea.helpers({
   messages: function () {
-    
-    Session.set('messages', Messages.find({room: Session.get('currentroom')}).count());
     return Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]});
   },
   currentmsg: function () {
@@ -73,13 +60,23 @@ Template.chatarea.events({
                 Messages.update(doc._id, {$set: {pinned: !(this.pinned), createdAt: time}});
             }
         }
-    },  
-    'mousedown #splitbar': function(evt, inst) {
+    },
+    
+    'click .deleteicon': function(evt, inst) {
+        var id = evt.target.id;
+        if(id !== null) {
+            Meteor.call('removemessage', Session.get('currentroom'), id);
+        }
+    },
+    
+    'mousedown #splitbar': function(evt) {
         Session.set('adjusting', true);
     },
-    'mouseup .chatarea': function(evt, inst) {
+    
+    'mouseup .chatarea': function(evt) {
         Session.set('adjusting', false);
     },
+    
     'mousemove .chatarea': function(evt, inst) {
         if(Session.get('adjusting')) {
             var bar = inst.find("#splitbar");
@@ -100,7 +97,6 @@ Template.chatarea.onRendered(function () {
     var justToTriggerReactivity = Messages.find({}).fetch();
     var chatdiv = that.find("#messages");
     chatdiv.scrollTop = chatdiv.scrollHeight;
-    ////that.$("#messages").emoticonize();
   });
 });
 
@@ -114,6 +110,14 @@ Template.chat.helpers({
           type: "image",
           class: "pinicon",
           src: "/pinmessageicon.png"
+      };
+  },
+  deleteid: function() {
+      return {
+          id: this.identifier,
+          type: "image",
+          class: "deleteicon",
+          src: "/deletemsg.png"
       };
   },
   time: function() {
@@ -146,7 +150,6 @@ Template.chat.helpers({
 
 Template.textentry.events({
   'keypress .chatinput': function (evt) {
-    $("#roomname").css("background-color", "gray");
     switch (evt.keyCode) {
     case 13: // enter
       var text = evt.target.value;
@@ -155,7 +158,16 @@ Template.textentry.events({
             text = text.substring(1);
       }
       if (text && text !== "") {
-        var counter = Messages.find({}, {sort: ["createdAt"]}).count();
+        var arr = Messages.find({}, {sort: ["createdAt"]}).fetch();
+        var doc = arr[arr.length - 1];
+        var counter;
+        if(doc) {
+            var thing = doc.identifier.substring(7);
+            counter = parseInt(thing, 10);
+        }
+        else {
+            counter = 1;
+        }
         var str = "message" + (counter+1);
         Messages.insert({
             identifier: str,
@@ -168,13 +180,14 @@ Template.textentry.events({
         });
         
         Session.set('currentmsg', null);
+        
       }
       evt.target.value = "";
       evt.preventDefault();
       break;
     }
   },
-  'click #sendbutton': function(evt, inst) {
+    'click #sendbutton': function(evt, inst) {
       var area = inst.find(".chatinput");
       var text = area.value;
       if(text.length > 0) {
@@ -190,8 +203,17 @@ Template.textentry.events({
           name = Meteor.user().username;
       }
       if(text !== null && text !== "") {
-        var counter = Messages.find({}, {sort: ["createdAt"]}).count();
-        var str = "message" + (counter+1);
+        var arr = Messages.find({}, {sort: ["createdAt"]}).fetch();
+        var doc = arr[arr.length - 1];
+        var counter;
+        if(doc) {
+            var thing = doc.identifier.substring(7);
+            counter = parseInt(thing, 10);
+        }
+        else {
+            counter = 0;
+        }
+        str = "message" + (counter+1);
         Messages.insert({
           identifier: str,
           pinned: false,
@@ -225,14 +247,7 @@ Template.textentry.events({
           Session.set('currentmsg', null);
       }
       evt.preventDefault();
-  },
-  'focus .chatinput': function(evt, inst) {
-        $("#roomname").css("background-color", "gray");
-        //Session.set('isFocused', true);
   }
-  //'blur .chatinput': function(evt, inst) {
-     // Session.set('isFocused', false);
-  //}
 });
 
 Template.header.events({
@@ -264,13 +279,6 @@ Template.chatroom.helpers({
   }
 });
 
-Template.body.events({
-    'mousemove': function(evt, inst) {
-        $("#rest-of-page").css("background-color", "gray");
-    }
-});
-
-
 Meteor.startup(function() {
   Tracker.autorun(function () {
     var user = Meteor.user();
@@ -286,4 +294,3 @@ Meteor.startup(function() {
     });
   });
 });
-

@@ -38,12 +38,18 @@ Meteor.methods({
   },
   leaveRoom: function (room, all) {
     Rooms.update(all?{}:room, {$pull: {currentusers: {connection: this.connection.id}}}, {multi:true});
+  },
+  
+  removemessage: function(roomname, id) {
+      if(Meteor.userId() && Meteor.userId() == Messages.findOne({room: roomname, identifier: id}).owner) {
+        Messages.remove({room: roomname, identifier: id});
+      }
   }
 });
 
 Meteor.onConnection(function (conn) {
   conn.onClose(function () {
     Rooms.update({}, {$pull: {currentusers: {connection: conn.id}}}, {multi: true});
-    Guests.remove({connection: conn.id}, {multi:true});
+    Guests.remove({connection: conn.id});
   }); 
 });
