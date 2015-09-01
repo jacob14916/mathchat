@@ -13,7 +13,43 @@
   {{> yield}}
   </div>
 </template>
-
+<template name="guide">
+    {{#mathjax}}<div style="width:100%; height: 100%; background-color: #C5E3BF">
+        <div id="guide">
+            <h1>The Mathchat Guide</h1>
+            <h3>So what exactly is mathchat?</h3>
+            <p>Mathchat provides online chatrooms that offer LaTeX rendering, courtesy of <a href="http://meteor.com">Meteor</a> and <a href="http://mathjax.org">Mathjax</a>!</p>
+            <h3>Wha...? LaTeX?</h3>
+            <p>LaTeX (preferably pronounced lay-TEK) is a typesetting markup language that can generate neat-looking mathematical and scientific expressions</p>
+            <p>For example, suppose we wanted to write the square root of 5. In a regular chat (such as gmail, facebook, whatever people use today) perhaps the 
+                closest you can get is something like sqrt(5). But with LaTeX you can display it as $\sqrt{5}$. As expressions get more and more complicated, like 
+                $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
+                it'd be hard to maintain readability through a normal chat display. 
+            </p>
+            <h3>Sounds cool. What do I do now?</h3>
+            <p>Creating an account is extremely easy, and takes about 7.26 seconds (depending on how long you think about the username you want). Just click the "Sign in" button at the 
+                top-right corner and click "create account". You can then enter in a roomname in the "Go to room: " field and you will be taken to that chatroom. 
+                If you aren't logged in upon entering a chatroom, you'll be shown as a "Guest".
+            </p>
+            <p>You can now chat with your friends (or even enemies if you want)! </p>
+            <h3>What about the math?</h3>
+            <p>If you want to type some math, wrap it in dollar signs, like this: $\$$ \sqrt{x+y} $\$$. This will display $\sqrt{x+y}$. That was inline rendering i.e. your math formula will appear as part of the line. If you have a larger formula and want to separate it apart from the text, 
+                you can wrap your math in double dollar signs, like this $\$\$$ \int_1^{\infty} \frac{1}{x^2} \, dx = 1 $\$\$$, and will be displayed like 
+                $$\int_1^{\infty} \frac{1}{x^2} \, dx = 1$$
+            </p>
+            <p>
+                On the side panel of each chat room, you will notice a Latex Quick Reference. Click the symbol you would like to use and the code for it 
+                will show up in the input area. 
+            </p>
+            
+            <h3>A more complete LaTeX reference</h3>
+            <p>Quick note: exponents are done with carats, like x^2. However, x^20 will display $x^20$ and thus you should use x^{20} instead. Subscripts use the underscore (_) symbol. Same principle with the exponent applies.</p>
+            <p>There exists a very good LaTeX guide on Art of Problem Solving; here are the links to a reference of <a href="http://artofproblemsolving.com/wiki/index.php/LaTeX:Symbols">symbols</a>
+                and <a href="http://artofproblemsolving.com/wiki/index.php/LaTeX:Commands">commands</a>
+            </p>
+        </div>
+    </div>{{/mathjax}}
+</template>
 <template name="homepage">
   <div style="padding: 10px; display:block; font-size: 20px; width:100%">
     <img src="/logo512.png" width="512px" style="display:block;margin-left:auto;margin-right:auto">
@@ -83,7 +119,7 @@
     <div id="navigationbar">
       <a class="navbutton" href="/">Home</a>
       <a class="navbutton" href="/room/lobby"> Lobby </a>
-      <a class="navbutton" href="/room/help"> Help </a>
+      <a class="navbutton" href="/guide"> Guide </a>
       <span style="float:right;margin-right:10px">
 	Go to room:
       <form class="roomnav" style="display:inline">

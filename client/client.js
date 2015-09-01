@@ -25,6 +25,9 @@ Router.route('/room/:roomname', function () {
   Meteor.call("joinRoom", roomname);
 });
 
+Router.route('/guide', function () {
+    this.render("guide");
+});
 Template.chatarea.helpers({
   messages: function () {
     return Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]});
