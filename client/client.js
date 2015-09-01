@@ -279,6 +279,78 @@ Template.chatroom.helpers({
   }
 });
 
+Template.chatroom.events({
+   'click .reference': function(evt, inst) {
+       var id = evt.target.id;
+       var area = inst.find('.chatinput');
+       var str = area.value;
+       var end = area.selectionEnd;
+       var start = area.selectionStart;
+       area.value = str.substring(0, start);
+       switch(id) {
+           case "fraction":
+               area.value += "\\frac{x}{y}";
+               break;
+            case "exponent":
+                area.value += "x^{y}";
+                break;
+            case "sigma":
+                area.value += "\\sum_{i=0}^{n}";
+                break;
+            case "product":
+                area.value += "\\prod_{i=0}^{n}";
+                break;
+            case "le":
+                area.value += "\\le";
+                break;
+            case "ge":
+                area.value += "\\ge";
+                break;
+            case "abc":
+                area.value += "\\overline{abc}";
+                break;
+            case "integral":
+                area.value += "\\int_{a}^{b} x \\, dx";
+                break;
+            case "pm":
+                area.value += "\\pm";
+                break;
+            case "lim":
+                area.value += "\\lim_{x\\to\\infty}\\frac{1}{x}";
+                break;
+            case "ln":
+                area.value += "\\ln{e}";
+                break;
+            case "log":
+                area.value += "\\log_{n} n^2";
+                break;
+            case "binom":
+                area.value += "\\dbinom{9}{3}";
+                break;
+            case "degree":
+                area.value += "x^\\circ";
+                break;
+            case "nthroot":
+                area.value += "\\sqrt[n]{x}";
+                break;
+            case "sqrt":
+                area.value += "\\sqrt{2}";
+                break;
+            case "times":
+                area.value += "\\times";
+                break;
+            case "cdot":
+                area.value += "\\vec{x} \\cdot \\vec{y}";
+                break;
+       }
+       var len = area.value.length;
+       area.value += str.substring(end);
+       area.value.selectionStart = len;
+       area.value.selectionEnd = len;
+
+   } 
+});
+
 Meteor.startup(function() {
   Tracker.autorun(function () {
     var user = Meteor.user();

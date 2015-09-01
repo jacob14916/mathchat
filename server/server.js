@@ -1,7 +1,7 @@
 var numGuests = 0;
 
 Meteor.startup(function(){
-  // server stuff
+    
 });
 
 Meteor.methods({

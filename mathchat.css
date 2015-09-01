@@ -4,6 +4,7 @@
 
 body {
    background-color: #C5E3BF; 
+   overflow-x: hidden;
 }
 
 #rest-of-page {
@@ -109,13 +110,13 @@ body {
 #reference {
     position: absolute;
     top: 249px; /* Leaves 3 px above */
-    bottom: 0;
+    bottom: 10px;
     left: 0;
     right: 0;
     padding: 8px; 
     background-color: white;
     border-radius: 3px;
-    
+    overflow-y: auto;
 }
 
 /*Chat area that displays messages and inputs */
@@ -146,7 +147,7 @@ body {
     border-top-left-radius: 3px;
     border-top-right-radius: 3px;
     border: 1px solid green;
-    overflow-y: scroll;
+    overflow-y: auto;
     
     /* Total height: 70 + 16 + 2 = 88 */
 }
@@ -165,7 +166,7 @@ body {
     border-bottom-left-radius: 3px;
     border-bottom-right-radius: 3px;
     
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 #messages p {
     position: relative;
@@ -189,7 +190,7 @@ body {
     border-radius: 3px;
     padding: 8px;
     border: 1px solid green;
-    overflow-y: scroll;
+    overflow-y: auto;
     /* Total height: 60 + 16 = 76 px */
     
 }
@@ -349,4 +350,29 @@ body {
 
 .pintextregion {
     margin-right: 20px;
+}
+
+#reference td {
+    width: 50px;
+    height: 50px;
+}
+
+#lim {
+    width: 50px;
+}
+
+#sqrt {
+    width: 40px;
+}
+
+#ln {
+    width: 30px;
+}
+
+#degree {
+    width: 30px;
+}
+
+#nthroot {
+    width: 35px;
 }

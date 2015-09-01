@@ -36,7 +36,41 @@
         {{{currentusers}}}
       </div>
       <div id="reference">
-        LaTeX quick reference goes here
+      <h3 style="margin-top: 0; margin-bottom: 2px">LaTeX Quick Reference</h3>
+      <span style="font-size: 12px">Wrap your math in $...$ signs for inline math, $$...$$ for display mode!</span>
+       <table style="width: 100%">
+        <tr>
+          <td><input id="fraction" class="reference" type= "image" src="/fraction.png"/></td>
+          <td><input id="exponent" class="reference" type= "image" src="/exponent.png" /></td>
+          <td><input id="sigma" class="reference" type= "image" src="/sigma.png" /></td>
+        </tr>
+        <tr>
+          <td><input id="product" class="reference" type= "image" src="/product.png"/></td>
+          <td><input id="le" class="reference" type= "image" src="/le.png" /></td>
+          <td><input id="ge" class="reference" type= "image" src="/ge.png" /></td>
+        </tr>
+        <tr>
+          <td ><input id="abc" class="reference" type= "image" src="/abc.png"/></td>
+          <td ><input id="integral" class="reference" type= "image" src="/integral.png" /></td>
+          <td ><input id="pm" class="reference" type= "image" src="/pm.png" /></td>
+        </tr>
+        <tr>
+          <td ><input id="lim" class="reference" type= "image" src="/lim.png"/></td>
+          <td ><input id="ln" class="reference" type= "image" src="/ln.png" /></td>
+          <td ><input id="log" class="reference" type= "image" src="/log.png" /></td>
+        </tr>
+        <tr>
+          <td ><input id="binom" class="reference" type= "image" src="/binom.png"/></td>
+          <td ><input id="degree" class="reference" type= "image" src="/degree.png" /></td>
+          <td ><input id="nthroot" class="reference" type= "image" src="/nthroot.png" /></td>
+        </tr>
+        <tr>
+          <td ><input id="sqrt" class="reference" type= "image" src="/sqrt.png"/></td>
+          <td ><input id="times" class="reference" type= "image" src="/times.png" /></td>
+          <td ><input id="cdot" class="reference" type= "image" src="/cdot.png" /></td>
+        </tr>
+
+        </table>
       </div>
     </div>
 </template>
@@ -66,7 +100,7 @@
 
 <template name="chat">
   <p>{{user}} <span style="color:grey">{{time}}</span>:
-    {{#mathjax}}<span class="textregion">{{text}}</span>{{/mathjax}} <input {{pinid}}/> <input {{deleteid}}/> </p>
+    {{#mathjax}}{{#autolink}}<span class="textregion">{{text}}</span>{{/autolink}}{{/mathjax}} <input {{pinid}}/> <input {{deleteid}}/> </p>
 </template>
 
 <!-- No hyphens in names. at all. -->
@@ -77,7 +111,7 @@
       {{#if pinnedmessages}}
         {{#each pinnedmessages}}
           <p><span style="color:silver">{{username}}</span>:
-          {{#mathjax}}<span class="pintextregion">{{text}}</span>{{/mathjax}}<input {{pinattributes}}/></p>
+          {{#mathjax}}{{#autolink}}<span class="pintextregion">{{text}}</span>{{/autolink}}{{/mathjax}}<input {{pinattributes}}/></p>
         {{/each}}
       {{else}}
         <span style="color:silver">Pin the problem statement/important messages here!</span>
