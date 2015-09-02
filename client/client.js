@@ -15,14 +15,36 @@ Router.route('/', function () {
 });
 
 Router.route('/room/:roomname', function () {
-  this.render("chatroom");
   var roomname = this.params.roomname.toLowerCase(); // toLowerCase would toss out case sensitivity
+  var that = this;
   Tracker.nonreactive(function () {
-    if (!Rooms.find(roomname).count()) Rooms.insert({_id: roomname, currentusers: []});
+    if (!Rooms.find(roomname).count()) {
+        Rooms.insert({_id: roomname, currentusers: [], reserver: null, allowed: []});
+    }
+    if(Rooms.findOne(roomname).reserver) {
+        if(!_.find(Rooms.findOne(roomname).allowed, 
+        function(user){
+            if(!Meteor.user()) return false;
+            else return Meteor.user().username == user;
+        })) {that.render('accessdenied');
+            Meteor.call("leaveRoom", Session.get('currentroom'), true);
+            Session.set('currentroom', null);
+        }
+        else {
+            that.render("chatroom");
+            Meteor.call("leaveRoom", Session.get('currentroom'), true);
+            Session.set('currentroom', roomname);
+            Meteor.call("joinRoom", roomname);
+        }
+    }
+    else {
+        that.render("chatroom");
+        Meteor.call("leaveRoom", Session.get('currentroom'), true);
+        Session.set('currentroom', roomname);
+        Meteor.call("joinRoom", roomname);
+    }
   });
-  Meteor.call("leaveRoom", roomname, true);
-  Session.set('currentroom', roomname);
-  Meteor.call("joinRoom", roomname);
+  
 });
 
 Router.route('/guide', function () {
@@ -267,7 +289,7 @@ Accounts.ui.config({
 Template.chatroom.helpers({
    roomname: function() {
        return Session.get('currentroom');
-   },
+   }, 
   currentusers: function() {
     var display = "";
     var room = Rooms.findOne({_id: Session.get("currentroom")});
@@ -275,11 +297,48 @@ Template.chatroom.helpers({
       var users =  _.countBy(room.currentusers, 'name');
       for (var name in users) {
 	var count = users[name];
-	display += name + ((count>1)?" (x" + count + ")":"")+"<br>";
+	display += name + ((count>1)?" (x" + count + ")":"") + ((room.reserver == name) ? " (admin)" : "")+"<br>" ;
       }
     }
     return display;
+  },
+  resbutton: function() {
+      room = Rooms.findOne(Session.get('currentroom'));
+      if(room.reserver && Session.get('username') == room.reserver) {
+          return "Unreserve";
+      }
+      else if (room.reserver) {
+          return "Room reserved";
+      }
+      else {
+          return "Reserve room";
+      }
+  },
+  reserved: function() {
+      var reserver = Rooms.findOne(Session.get('currentroom')).reserver;
+      if(Meteor.user() && reserver && Meteor.user().username == reserver) {
+          $("#currentusers").css("height", "154px");
+          return reserver;
+      }
+      else {
+          $("#currentusers").css("height", "184px");
+          return false;
+      }
+  },
+  allowedusers: function() {
+      var room = Rooms.findOne(Session.get('currentroom'));
+        if(room.reserver) {
+        //var room = Rooms.findOne(Session.get('currentroom'));
+        var currentusernames = _.map(room.currentusers, function(val) {return val.name});
+        var arr = _.difference(room.allowed, currentusernames);
+        var display = "";
+        for(var i = 0; i < arr.length; i++) {
+          display += "<div class=\"invitedusers\"><span class=\"invited\" " +">" + arr[i] + " (invited) </span> <input class=\"removeinvited\" id=\"" + arr[i] + "\"" +"type=\"image\" src=\"/deletemsg.png\"/> </div>";
+        }
+        return display;
+      }
   }
+  
 });
 
 Template.chatroom.events({
@@ -350,8 +409,36 @@ Template.chatroom.events({
        area.value += str.substring(end);
        area.value.selectionStart = len;
        area.value.selectionEnd = len;
+       evt.preventDefault();
 
-   } 
+   },
+   'click #roomnamebutton': function(evt, inst) {
+       Meteor.call('reserveroom', Session.get('currentroom'), Session.get('username'));
+       evt.preventDefault();
+   },
+   'click #addbutton': function(evt, inst) {
+       var input = inst.find("#addname");
+       Meteor.call('adduser', input.value, Session.get('currentroom'));
+       evt.preventDefault();
+       input.value = "";
+   },
+   'keypress #addname': function(evt, inst) {
+       if(evt.keyCode == 13) {
+           var text = evt.target.value;
+            if(text.length > 0) {
+           while(text.substring(0, 1) == " " || text.substring(0, 1) == "\n")
+             text = text.substring(1);
+            }
+            if(text && text !== "")
+           Meteor.call('adduser', text, Session.get('currentroom'));
+           evt.target.value = "";
+       }
+       
+   },
+   'click .removeinvited': function(evt) {
+       var id = evt.target.id;
+       Meteor.call('removeinvited', Session.get('currentroom'), id);
+   }
 });
 
 Meteor.startup(function() {

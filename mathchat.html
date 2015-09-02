@@ -61,16 +61,25 @@
   </div>
 </template>
 
+<template name="accessdenied">
+    Oops darn it looks like this room is already reserved!
+</template>
+
 
 <template name="chatroom">
   {{> chatarea}}
   <div class="sidepanel">
       <div id="roomname">
-        {{roomname}}
+        <div id="roomnametext">{{roomname}}</div><input id = "roomnamebutton" type="button" value = {{resbutton}} />
       </div>
       <div id="currentusers">
         {{{currentusers}}}
+        <span style="color:silver">{{{allowedusers}}}</span>
       </div>
+      {{#if reserved}} 
+        <input id="addname" type="text" placeholder="Invite users here" />
+        <input id="addbutton" type="image" src="/add.png"/>
+      {{/if}}
       <div id="reference">
       <h3 style="margin-top: 0; margin-bottom: 2px">LaTeX Quick Reference</h3>
       <span style="font-size: 12px">Wrap your math in $...$ signs for inline math, $$...$$ for display mode!</span>
