@@ -243,6 +243,9 @@ Meteor.methods({
       });
       subscribed = _.map(arr, function(item){return item.username});
       var notThere = _.difference(subscribed, current);
+      if(Rooms.findOne(roomname).reserver) {
+          notThere = _.intersection(notThere, Rooms.findOne(roomname).allowed);
+      }
       Meteor.users.update({username: {$in: notThere}}, {$pull: {subscriptions: {room: roomname}}});
       Meteor.users.update({username: {$in: notThere}}, {$push: {subscriptions: {room: roomname, unread: true}}});
   },
