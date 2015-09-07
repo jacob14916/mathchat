@@ -19,7 +19,7 @@ Router.route('/room/:roomname', function () {
   var that = this;
   Tracker.nonreactive(function () {
     if (!Rooms.find(roomname).count()) {
-        Rooms.insert({_id: roomname, currentusers: [], reserver: null, allowed: []});
+        Rooms.insert({_id: roomname, currentusers: [], reserver: null, allowed: [], requests: []});
     }
     if(Rooms.findOne(roomname).reserver) {
         if(!_.find(Rooms.findOne(roomname).allowed, 
@@ -28,13 +28,14 @@ Router.route('/room/:roomname', function () {
             else return Meteor.user().username == user;
         })) {that.render('accessdenied');
             Meteor.call("leaveRoom", Session.get('currentroom'), true);
-            Session.set('currentroom', null);
+            Session.set('currentroom', roomname);
         }
         else {
             that.render("chatroom");
             Meteor.call("leaveRoom", Session.get('currentroom'), true);
             Session.set('currentroom', roomname);
             Meteor.call("joinRoom", roomname);
+            Meteor.call("updateSubscriptionsEnter", roomname);
         }
     }
     else {
@@ -42,6 +43,7 @@ Router.route('/room/:roomname', function () {
         Meteor.call("leaveRoom", Session.get('currentroom'), true);
         Session.set('currentroom', roomname);
         Meteor.call("joinRoom", roomname);
+        Meteor.call("updateSubscriptionsEnter", roomname);
     }
   });
   
@@ -203,6 +205,7 @@ Template.textentry.events({
             username: Session.get("username"),
             pinned: false
         });
+        Meteor.call('updateSubscriptions', Session.get('currentroom'));
         
         Session.set('currentmsg', null);
         
@@ -248,6 +251,7 @@ Template.textentry.events({
           owner: Meteor.userId(),
           username: name
         });
+        Meteor.call('updateSubscriptions', Session.get('currentroom'));
         area.value = "";
         Session.set('currentmsg', null);
         
@@ -279,6 +283,11 @@ Template.header.events({
   'submit .roomnav':function(evt) {
     evt.preventDefault();
     Router.go('/room/' + evt.target.room.value);
+  },
+  
+  'click #subscribebutton': function(evt) {
+      Meteor.call('clicksubscribe', Session.get('currentroom'));
+      
   }
 });
 
@@ -303,7 +312,7 @@ Template.chatroom.helpers({
     return display;
   },
   resbutton: function() {
-      room = Rooms.findOne(Session.get('currentroom'));
+      var room = Rooms.findOne(Session.get('currentroom'));
       if(room.reserver && Session.get('username') == room.reserver) {
           return "Unreserve";
       }
@@ -337,6 +346,10 @@ Template.chatroom.helpers({
         }
         return display;
       }
+  },
+  requesters: function() {
+      var room = Rooms.findOne(Session.get('currentroom'));
+      return room.requests[0];
   }
   
 });
@@ -438,8 +451,103 @@ Template.chatroom.events({
    'click .removeinvited': function(evt) {
        var id = evt.target.id;
        Meteor.call('removeinvited', Session.get('currentroom'), id);
+   },
+   'click #acceptbutton': function() {
+       Meteor.call('acceptrequest', Session.get('currentroom'));
+   },
+   'click #declinebutton': function() {
+       Meteor.call('declinerequest', Session.get('currentroom'));
    }
 });
+
+Template.accessdenied.helpers({
+    reserver: function() {
+        return Rooms.findOne(Session.get('currentroom')).reserver;
+    }
+});
+Template.accessdenied.helpers({
+    allowed: function() {
+        var allowarr = Rooms.findOne(Session.get('currentroom')).allowed;
+        if(Meteor.user())
+          return _.contains(allowarr, Meteor.user().username);
+        else return false;
+    },
+    sendrequestvalue: function() {
+        var requesters = Rooms.findOne(Session.get('currentroom')).requests;
+        var allowarr = Rooms.findOne(Session.get('currentroom')).allowed;
+        if(Meteor.user()) {
+            if(_.contains(requesters, Meteor.user().username)) return "Request Sent";
+            else if(_.contains(allowarr, Meteor.user().username)) return "Accepted";
+            else return "Send request";
+        }
+        else {
+            return "Send request";
+        }
+    },
+    loggedin: function() {
+        if(Meteor.user()) {
+            return "To enter the room, you can send a request to the room admin";
+        }
+        else {
+            return "In order to send a request to the room admin, you must sign in";
+        }
+    }
+});
+Template.accessdenied.events({
+    'click #requestinvite': function(evt) {
+        Meteor.call("requestentry", Session.get('currentroom'));
+    }
+});
+
+Template.header.helpers({
+   canSubscribe: function() {
+       if(Meteor.user()) {
+           var where = Router.current().route.getName();
+           return where && where.substring(0, 4) == "room";
+       }
+       else return false;
+   },
+   isSubscribed: function() {
+       if(Meteor.user()) {
+           if(Meteor.user().subscriptions) {
+             var arr = new Array();
+             for (var i = 0; i < Meteor.user().subscriptions.length; i++) {
+                 arr[i] = Meteor.user().subscriptions[i].room;
+             }
+             if( _.contains(arr, Session.get('currentroom'))) return "Unsubscribe";
+             else return "Subscribe to " + Session.get('currentroom');
+           }
+           else return "Subscribe to " + Session.get('currentroom');
+       }
+       else {
+           return "Subscribe to...logging in!";
+       }
+   }
+});
+
+Template.homepage.helpers({
+    currentUsername: function() {
+        return Meteor.user().username;
+    },
+    unreadMessages: function() {
+        var arr = Meteor.user().subscriptions;
+        console.log(Meteor.user());
+        var str = "";
+        if(arr) {
+        for(var i = 0; i < arr.length; i++) {
+            if(arr[i].unread) {
+                str += "<li style=\"font-weight: bold\"> <a href=\"/room/" + arr[i].room + "\">" +arr[i].room + "</a></li>";
+            }
+            else {
+                str += "<li><a href=\"/room/" + arr[i].room + "\">" + arr[i].room + "</a></li>";
+            }
+        }
+        }
+        if(str == "") return "Looks like don't have any subscriptions!";
+        else return str;
+    }
+});
+
 
 Meteor.startup(function() {
   Tracker.autorun(function () {
@@ -456,3 +564,5 @@ Meteor.startup(function() {
     });
   });
 });
+
+Meteor.subscribe("userData");

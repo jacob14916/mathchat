@@ -17,7 +17,29 @@
     {{#mathjax}}<div style="width:100%; height: 100%; background-color: #C5E3BF">
         <div id="guide">
             <h1>The Mathchat Guide</h1>
-            <h3>So what exactly is mathchat?</h3>
+            <div id="tocwrapper">
+              <div id="toc">
+              <h4 style="font-family:sans-serif; margin: 0">Table of Contents</h4>
+                <ol>
+                    <li>
+                        <a href="#Introduction">Introduction</a>
+                    </li>
+                    <li>
+                        <a href="#gettingstarted">Getting Started</a>
+                    </li>
+                    <li>
+                        <a href="#gettingstartedwithlatex">Getting Started with LaTeX</a>
+                    </li>
+                    <li>
+                        <a href="#amorecompletereference">A More Complete Reference</a>
+                    </li>
+                    <li>
+                        <a href="#reservations">Making Private Rooms</a>
+                    </li>
+                </ol>
+              </div>
+            </div>
+            <h3 id="Introduction">So what exactly is mathchat?</h3>
             <p>Mathchat provides online chatrooms that offer LaTeX rendering, courtesy of <a href="http://meteor.com">Meteor</a> and <a href="http://mathjax.org">Mathjax</a>!</p>
             <h3>Wha...? LaTeX?</h3>
             <p>LaTeX (preferably pronounced lay-TEK) is a typesetting markup language that can generate neat-looking mathematical and scientific expressions</p>
@@ -26,13 +48,13 @@
                 $$x = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}$$
                 it'd be hard to maintain readability through a normal chat display. 
             </p>
-            <h3>Sounds cool. What do I do now?</h3>
+            <h3 id="gettingstarted">Sounds cool. What do I do now?</h3>
             <p>Creating an account is extremely easy, and takes about 7.26 seconds (depending on how long you think about the username you want). Just click the "Sign in" button at the 
                 top-right corner and click "create account". You can then enter in a roomname in the "Go to room: " field and you will be taken to that chatroom. 
                 If you aren't logged in upon entering a chatroom, you'll be shown as a "Guest".
             </p>
             <p>You can now chat with your friends (or even enemies if you want)! </p>
-            <h3>What about the math?</h3>
+            <h3 id="gettingstartedwithlatex">What about the math?</h3>
             <p>If you want to type some math, wrap it in dollar signs, like this: $\$$ \sqrt{x+y} $\$$. This will display $\sqrt{x+y}$. That was inline rendering i.e. your math formula will appear as part of the line. If you have a larger formula and want to separate it apart from the text, 
                 you can wrap your math in double dollar signs, like this $\$\$$ \int_1^{\infty} \frac{1}{x^2} \, dx = 1 $\$\$$, and will be displayed like 
                 $$\int_1^{\infty} \frac{1}{x^2} \, dx = 1$$
@@ -42,15 +64,30 @@
                 will show up in the input area. 
             </p>
             
-            <h3>A more complete LaTeX reference</h3>
+            <h3 id="amorecompletereference">A more complete LaTeX reference</h3>
             <p>Quick note: exponents are done with carats, like x^2. However, x^20 will display $x^20$ and thus you should use x^{20} instead. Subscripts use the underscore (_) symbol. Same principle with the exponent applies.</p>
             <p>There exists a very good LaTeX guide on Art of Problem Solving; here are the links to a reference of <a href="http://artofproblemsolving.com/wiki/index.php/LaTeX:Symbols">symbols</a>
                 and <a href="http://artofproblemsolving.com/wiki/index.php/LaTeX:Commands">commands</a>
             </p>
+            <h3 id="reservations">Making Private Rooms</h3>
+            
+            <p>You can also make a room private by reserving a room. Make sure you are logged in before reserving a room. You can reserve a room by clicking on the "Reserve Room" button. 
+                This will make you the room admin, and only you can add/remove users and unreserve the room. With great power comes great responsibility, my friend. A input field should show up and you will be able to invite other users 
+                your reserved room. 
+            </p>
+            <p>If you are not invited to a room and go to that room you will be shown an access denied page that will allow you to request the room admin to let you in (assuming you are logged in). If you are accepted, a dialog box will notify you to refresh your page to enter the room. </p>
         </div>
     </div>{{/mathjax}}
 </template>
 <template name="homepage">
+  {{#if currentUser}}
+  <div id="homepage" >
+    <h2>Hello, {{currentUsername}}!</h2>
+    
+    <h3>Below are your subscriptions. Bolded roomnames have unread messages!</h3>
+    <ul>{{{unreadMessages}}}</ul>
+  </div>
+  {{else}}
   <div style="padding: 10px; display:block; font-size: 20px; width:100%">
     <img src="/logo512.png" width="512px" style="display:block;margin-left:auto;margin-right:auto">
     <br>
@@ -59,12 +96,24 @@
     <br>
     Find us on github <a href="http://github.com/jacob14916/mathchat">here</a>.
   </div>
+  {{/if}}
 </template>
 
 <template name="accessdenied">
-    Oops darn it looks like this room is already reserved!
+    <div id="admsgbox"><h3>Oops darn!</h3> 
+    <p>Looks like {{reserver}} has already reserved this room! {{loggedin}}</p>
+    <div id="backtohomepagediv"><a href="/" id="backtohomepage">Back to homepage</a></div>
+    {{#if currentUser}}
+    <input type="button" value={{sendrequestvalue}} id="requestinvite"/>
+    {{/if}}
+    
+    </div>
+    {{#if allowed}}
+        <div id="notifyadmit">
+            You are now allowed to enter. Refresh the page to enter the room.
+        </div>
+    {{/if}}
 </template>
-
 
 <template name="chatroom">
   {{> chatarea}}
@@ -79,6 +128,10 @@
       {{#if reserved}} 
         <input id="addname" type="text" placeholder="Invite users here" />
         <input id="addbutton" type="image" src="/add.png"/>
+        {{#if requesters}}
+          <img src="/background.png" style="opacity: 0.5; height: 240px; width: 250px"/>
+          <div id="requestdialog" style="background-color: white">{{requesters}} is requesting to join the room. <input id="declinebutton" src="/decline.png" type="image"/> <input id="acceptbutton" src="/accept.png" type="image"/></div>
+        {{/if}}
       {{/if}}
       <div id="reference">
       <h3 style="margin-top: 0; margin-bottom: 2px">LaTeX Quick Reference</h3>
@@ -128,7 +181,7 @@
     <div id="navigationbar">
       <a class="navbutton" href="/">Home</a>
       <a class="navbutton" href="/room/lobby"> Lobby </a>
-      <a class="navbutton" href="/guide"> Guide </a>
+      <a class="navbutton" href="/guide"> Help </a>
       <span style="float:right;margin-right:10px">
 	Go to room:
       <form class="roomnav" style="display:inline">
@@ -139,6 +192,11 @@
     <div id="loginbutton">
         {{> loginButtons}}
     </div>
+    {{#if canSubscribe}}
+    <div id="subscribe">
+        <input type="button" value={{isSubscribed}} id="subscribebutton" />
+    </div>
+    {{/if}}
     
   </div>
 </template>

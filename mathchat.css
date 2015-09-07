@@ -7,6 +7,53 @@ body {
    overflow-x: hidden;
 }
 
+#homepage {
+    padding: 10px; 
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    top: 10px;
+    display:block; 
+    background-color: white; 
+    font-family: 'Titillium-Web', sans-serif;
+}
+
+ul li {
+    list-style-type: none;
+}
+
+ul {
+    padding: 0;
+}
+
+ol {
+    padding: 0;
+    margin: 0;
+    list-style-type: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+#toc {
+    border: 1px solid gray;
+    width: 175px;
+    padding: 5px;
+}
+#toc a {
+    position: relative;
+    font-family: sans-serif;
+    font-size: 12px;
+    text-decoration: none;
+    color: #0645ad;
+}
+
+#toc a:hover {
+    color: #0645ad;
+    text-decoration: underline;
+}
+
 #rest-of-page {
     position: absolute;
     left: 0px;
@@ -271,6 +318,12 @@ body {
     left: -200px;
 }
 
+#subscribe {
+    position: absolute;
+    top: 25px;
+    right: 0;
+}
+
 .pinicon {
     position: absolute;
     float: right;
@@ -406,6 +459,7 @@ h1 {
 
 #roomnamebutton {
     position: absolute;
+    background-color: white;
     left: 60%;
     right: 0;
     top: 12.5%;
@@ -441,4 +495,94 @@ h1 {
 
 .invitedusers:hover > .removeinvited {
     display: inline;
+}
+
+#admsgbox {
+    position: absolute;
+    background-color: white;
+    left: calc(50% - 200px);
+    width: 400px;
+    height: 200px;
+    top: 20%;
+    padding: 10px;
+    border: 5px solid gray;
+    font-family: 'Titillium-Web', sans-serif;
+}
+
+#requestinvite {
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    background-color: green;
+    color: white;
+    font-family: sans-serif;
+    font-weight: 800;
+    padding: 3px;
+    width: 150px;
+    font-size: 1.17em;
+    border: none;
+    cursor: pointer;
+}
+
+#backtohomepagediv {
+    position: absolute;
+    background-color: gray;
+    right: 160px;
+    color: white;
+    font-family: sans-serif;
+    font-weight: 800;
+    bottom: 5px;
+    text-align: center;
+    padding: 3px;
+}
+#backtohomepage {
+    text-decoration: none;
+    color: white;
+    font-size: 1.17em;
+}
+
+#requestdialog {
+    position: absolute;
+    top: 70px;
+    left: 5px;
+    right: 5px;
+    padding: 3px;
+    border: 5px solid gray;
+    height: 100px;
+}
+#declinebutton {
+    width: 100px;
+    position: absolute;
+    bottom: 2px;
+    right: 104px;
+}
+
+#acceptbutton {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+}
+
+#notifyadmit {
+    position: absolute;
+    bottom: 20px;
+    height: 50px;
+    width: 250px;
+    border-left: 5px solid green;
+    right: 0;
+    animation-name: allowed;
+    animation-duration: 2s;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-name: allowed;
+    background-color: white;
+    font-family: 'Titillium-Web', sans-serif;
+    padding: 5px;
+}
+@keyframes allowed {
+    from {right: -245px}
+    to {right: 0;}
+}
+@-webkit-keyframes allowed {
+    from {right: -245px;}
+    to {right: 0;}
 }
