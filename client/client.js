@@ -3,8 +3,24 @@ Session.setDefault('currentmsg', null);
 Session.setDefault('currentroom', null);
 Session.setDefault('username', "Guest-oops");
 Session.setDefault('adjusting', false);
-//Session.setDefault('isFocused', false);
+
 Session.setDefault('messages', -1);
+Session.setDefault('chatalert', false);
+Session.setDefault('newmsg', false);
+Session.setDefault('visible', true);
+
+var titleRoot = "mathchat 0.1";
+var titleBlinkStop = {handle:""};
+
+var blink = function (func, values, current, timeout, stop) {
+  var ret = func(values[current]);
+  if (ret === false) return {handle: null};
+  stop.handle = Meteor.setTimeout(
+    blink.bind(null, func, values, (current + 1)%values.length, timeout, stop),
+    timeout
+  );
+  return stop;
+};
 
 Router.configure({
   layoutTemplate: "layout"
@@ -12,9 +28,9 @@ Router.configure({
 
 Router.route('/', function () {
   Meteor.call("leaveRoom", null, true);
-
   Session.set('currentroom', null);
   this.render("homepage");
+  document.title = titleRoot;
 });
 
 Router.route('/room/:roomname', function () {
@@ -23,23 +39,20 @@ Router.route('/room/:roomname', function () {
   Tracker.nonreactive(function () {
     if (!Rooms.find(roomname).count()) Rooms.insert({_id: roomname, currentusers: []});
   });
-  Meteor.call("leaveRoom", Session.get('currentroom'), true);
   Session.set('currentroom', roomname);
   Meteor.call("joinRoom", roomname);
-  Session.set('messages', Messages.find({room: roomname}).count());
-  var lastMessageArray = Messages.find({room: roomname}, {sort: ["createdAt"]}).fetch();
-  var lastMessage = lastMessageArray[lastMessageArray.length - 1];
-  if(lastMessage && lastMessage.username != Session.get('username')) {
-    $("#roomname").css("background-color", "blue");
-    document.title="pay attention";
-  }
+  document.title = roomname + " | " + titleRoot;
+}, {name: 'room'});
 
+Router.onBeforeAction(function () {
+  Session.set("chatalert", false);
+  Meteor.call("leaveRoom", Session.get('currentroom'), true);
+  this.next();
 });
 
 Template.chatarea.helpers({
   messages: function () {
-    
-    Session.set('messages', Messages.find({room: Session.get('currentroom')}).count());
+    //Session.set('messages', Messages.find({room: Session.get('currentroom')}).count());
     return Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]});
   },
   currentmsg: function () {
@@ -227,6 +240,7 @@ Template.textentry.events({
       evt.preventDefault();
   },
   'focus .chatinput': function(evt, inst) {
+    Session.set("chatalert", false);
         $("#roomname").css("background-color", "gray");
         //Session.set('isFocused', true);
   }
@@ -266,12 +280,14 @@ Template.chatroom.helpers({
 
 Template.body.events({
     'mousemove': function(evt, inst) {
+      console.log("wut");
         $("#rest-of-page").css("background-color", "gray");
     }
 });
 
 
 Meteor.startup(function() {
+  console.log(Date());
   Tracker.autorun(function () {
     var user = Meteor.user();
     Meteor.call("leaveRoom", null, true);
@@ -284,6 +300,56 @@ Meteor.startup(function() {
 	Meteor.call("joinRoom", room);
       }
     });
+  });
+
+  Tracker.autorun(function () {
+    var fkk=":{bar}";
+  });
+
+  Tracker.autorun(function () {
+    var chatalert = Session.get("chatalert");
+    console.log("Chatalert", chatalert);
+    if (chatalert) {
+      titleBlinkStop = blink(function (t) {
+	document.title = t;
+      }, ["New message(es) in " + document.title, document.title], 0, 1000, {});
+    } else {
+      Meteor.clearTimeout(titleBlinkStop.handle);
+      document.title = Session.get("currentroom") + " | " + titleRoot;
+    }
+  });
+
+  Tracker.autorun(function () {
+    var visible = Session.get("visible");
+    var oldcount;
+    Tracker.nonreactive(function () {
+      console.log("getting oldcount");
+      oldcount = Session.get("messages");
+    });
+    
+    var msgcount = Messages.find({
+      room: Session.get("currentroom"),
+      username:{$ne: Session.get("username")}
+    }).count();
+
+    console.log("visible", visible, "msgcount", msgcount, oldcount);
+    if (msgcount > oldcount && !visible) {
+      Session.set("chatalert", true);
+      console.log("chatalert set to true");
+      Session.set("messages", msgcount);
+    } else {
+      Session.set("chatalert", false);
+    }
+  });
+
+  document.addEventListener("visibilitychange", function () {
+    var state = document.visibilityState;
+    if (state === "hidden") {
+      Session.set("visible", false);
+    } else {
+      Session.set("visible", true);
+    }
+    console.log(state);
   });
 });
 

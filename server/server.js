@@ -44,6 +44,6 @@ Meteor.methods({
 Meteor.onConnection(function (conn) {
   conn.onClose(function () {
     Rooms.update({}, {$pull: {currentusers: {connection: conn.id}}}, {multi: true});
-    Guests.remove({connection: conn.id}, {multi:true});
+    Guests.remove({connection: conn.id});
   }); 
 });
