@@ -261,7 +261,7 @@ Meteor.methods({
           Meteor.users.update(Meteor.userId(), {$push: {subscriptions: {room: roomname, unread: false}}});
       }
       else {
-          Meteor.users.update(Meteor.userId(), {$pull: {subscriptions: {room: roomname, unread: false}}});
+          Meteor.users.update(Meteor.userId(), {$pull: {subscriptions: {room: roomname}}});
       }
       //console.log(Meteor.users.findOne(Meteor.userId()));
   }

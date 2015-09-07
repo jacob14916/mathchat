@@ -536,10 +536,10 @@ Template.homepage.helpers({
         if(arr) {
         for(var i = 0; i < arr.length; i++) {
             if(arr[i].unread) {
-                str += "<li style=\"font-weight: bold\"> <a href=\"/room/" + arr[i].room + "\">" +arr[i].room + "</a></li>";
+                str += "<li class=\"subscribedTo\" style=\"font-weight: bold\"> <a href=\"/room/" + arr[i].room + "\">" +arr[i].room + "</a></li>";
             }
             else {
-                str += "<li><a href=\"/room/" + arr[i].room + "\">" + arr[i].room + "</a></li>";
+                str += "<li class=\"subscribedTo\"><a href=\"/room/" + arr[i].room + "\">" + arr[i].room + "</a><input type=\"image\" class = \"deletesubscription\"id=\"" + arr[i].room + "\" src=\"/deletemsg.png\" /></li>";
             }
         }
         }
@@ -548,6 +548,12 @@ Template.homepage.helpers({
     }
 });
 
+Template.homepage.events({
+    'click .deletesubscription': function(evt) {
+        Meteor.call('clicksubscribe', evt.target.id);
+        
+    }
+});
 
 Meteor.startup(function() {
   Tracker.autorun(function () {
