@@ -4,7 +4,7 @@ Session.setDefault('currentroom', null);
 Session.setDefault('username', "Guest-oops");
 Session.setDefault('adjusting', false);
 
-Session.setDefault('messages', -1);
+Session.setDefault('messages', 0);
 Session.setDefault('chatalert', false);
 Session.setDefault('newmsg', false);
 Session.setDefault('visible', true);
@@ -616,7 +616,7 @@ Meteor.startup(function() {
       }, ["New message(es) in " + document.title, document.title], 0, 1000, {});
     } else {
       Meteor.clearTimeout(titleBlinkStop.handle);
-      document.title = Session.get("currentroom") + " | " + titleRoot;
+      document.title = Session.get("currentroom") ? (Session.get("currentroom") + " | " + titleRoot) : titleRoot;
     }
   });
 
