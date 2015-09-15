@@ -9,6 +9,8 @@ Session.setDefault('chatalert', false);
 Session.setDefault('newmsg', false);
 Session.setDefault('visible', true);
 
+Session.setDefault('displaybase', 0);
+
 var titleRoot = "mathchat 0.1";
 var titleBlinkStop = {handle:""};
 
@@ -33,6 +35,17 @@ Router.route('/', function () {
   document.title = titleRoot;
 });
 
+Router.route('fullchat/:roomname', function() {
+    var roomname = this.params.roomname.toLowerCase();
+    this.render("fullchatroom");
+});
+
+Template.fullchatroom.helpers({
+    messagesfull: function() {
+        return Messages.find({room: Session.get('currentroom')}, {sort: ["createdAt"]});
+    }
+});
+
 Router.route('/room/:roomname', function () {
   var roomname = this.params.roomname.toLowerCase(); // toLowerCase would toss out case sensitivity
   var that = this;
@@ -53,6 +66,18 @@ Router.route('/room/:roomname', function () {
             that.render("chatroom");
             Meteor.call("leaveRoom", Session.get('currentroom'), true);
             Session.set('currentroom', roomname);
+            var arr = Messages.find({room: roomname}, {sort: ["createdAt"]}).fetch();
+            var index = arr.length - 50;
+            var doc = arr[index];
+            var counter;
+            if(doc) {
+                var thing = doc.identifier.substring(7);
+                counter = parseInt(thing, 10);
+            }
+            else {
+                counter = 0;
+            }
+            Session.set('displaybase', counter);
             Meteor.call("joinRoom", roomname);
             Meteor.call("updateSubscriptionsEnter", roomname);
         }
@@ -61,6 +86,18 @@ Router.route('/room/:roomname', function () {
         that.render("chatroom");
         Meteor.call("leaveRoom", Session.get('currentroom'), true);
         Session.set('currentroom', roomname);
+        var arr = Messages.find({room: roomname}, {sort: ["createdAt"]}).fetch();
+            var index = arr.length - 50;
+            var doc = arr[index];
+            var counter;
+            if(doc) {
+                var thing = doc.identifier.substring(7);
+                counter = parseInt(thing, 10);
+            }
+            else {
+                counter = 1;
+            }
+            Session.set('displaybase', counter);
         Meteor.call("joinRoom", roomname);
         Meteor.call("updateSubscriptionsEnter", roomname);
     }
@@ -81,7 +118,9 @@ Router.route('/guide', function () {
 });
 Template.chatarea.helpers({
   messages: function () {
-    return Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]});
+    var display = Session.get('displaybase');
+    var arr = Messages.find({room: Session.get("currentroom")}, {sort: ["createdAt"]}).fetch();
+    return _.filter(arr, function(doc){var thing = doc.identifier.substring(7); thing = parseInt(thing, 10); return thing > display});
   },
   currentmsg: function () {
     if(Session.get('currentmsg')) {
@@ -320,6 +359,10 @@ Template.header.events({
   'click #subscribebutton': function(evt) {
       Meteor.call('clicksubscribe', Session.get('currentroom'));
       
+  },
+  
+  'click #fullchat': function(evt) {
+      Router.go('/fullchat/' + Session.get('currentroom'));
   }
 });
 
@@ -622,22 +665,19 @@ Meteor.startup(function() {
 
   Tracker.autorun(function () {
     var visible = Session.get("visible");
-    var oldcount;
-    Tracker.nonreactive(function () {
-      console.log("getting oldcount");
-      oldcount = Session.get("messages");
-    });
+    
     
     var msgcount = Messages.find({
       room: Session.get("currentroom"),
       username:{$ne: Session.get("username")}
     }).count();
-
-    console.log("visible", visible, "msgcount", msgcount, oldcount);
-    if (msgcount > oldcount && !visible) {
+    
+    if(visible) {
+        Session.set('messages', msgcount);
+    }
+    if (msgcount > Session.get('messages') && !visible) {
       Session.set("chatalert", true);
       console.log("chatalert set to true");
-      Session.set("messages", msgcount);
     } else {
       Session.set("chatalert", false);
     }

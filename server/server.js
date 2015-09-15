@@ -248,6 +248,7 @@ Meteor.methods({
       }
       Meteor.users.update({username: {$in: notThere}}, {$pull: {subscriptions: {room: roomname}}});
       Meteor.users.update({username: {$in: notThere}}, {$push: {subscriptions: {room: roomname, unread: true}}});
+      console.log("not there", notThere);
   },
   updateSubscriptionsEnter: function(roomname) {
       if(Meteor.user() && Meteor.user().subscriptions) {
